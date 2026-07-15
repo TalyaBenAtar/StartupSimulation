@@ -15,6 +15,7 @@ struct EmployeesView: View {
 
     @State private var hiredCandidate: Employee?
     @State private var showHireConfirmation = false
+    @State private var showCannotAffordAlert = false
 
     private let backgroundGradient = LinearGradient(
         colors: [
