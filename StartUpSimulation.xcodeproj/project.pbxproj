@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		B27B58413007EAFD001A72FD /* MarketValuePoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27B58403007EAFD001A72FD /* MarketValuePoint.swift */; };
+		B27B58433007F5E0001A72FD /* GameOutcome.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27B58423007F5E0001A72FD /* GameOutcome.swift */; };
+		B27B58453007F900001A72FD /* GameOverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27B58443007F900001A72FD /* GameOverView.swift */; };
 		B27CD76C3007DDA50083F6E0 /* EmployeeRole.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27CD76B3007DDA50083F6E0 /* EmployeeRole.swift */; };
 		B27CD76E3007E1940083F6E0 /* MonthResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27CD76D3007E1930083F6E0 /* MonthResult.swift */; };
 		B28B59C530079B38001BB817 /* StartUpSimulationApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28B59C430079B38001BB817 /* StartUpSimulationApp.swift */; };
@@ -28,6 +30,8 @@
 
 /* Begin PBXFileReference section */
 		B27B58403007EAFD001A72FD /* MarketValuePoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketValuePoint.swift; sourceTree = "<group>"; };
+		B27B58423007F5E0001A72FD /* GameOutcome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOutcome.swift; sourceTree = "<group>"; };
+		B27B58443007F900001A72FD /* GameOverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverView.swift; sourceTree = "<group>"; };
 		B27CD76B3007DDA50083F6E0 /* EmployeeRole.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeRole.swift; sourceTree = "<group>"; };
 		B27CD76D3007E1930083F6E0 /* MonthResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthResult.swift; sourceTree = "<group>"; };
 		B28B59C130079B38001BB817 /* StartUpSimulation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StartUpSimulation.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -109,6 +113,7 @@
 				B27CD76B3007DDA50083F6E0 /* EmployeeRole.swift */,
 				B27CD76D3007E1930083F6E0 /* MonthResult.swift */,
 				B27B58403007EAFD001A72FD /* MarketValuePoint.swift */,
+				B27B58423007F5E0001A72FD /* GameOutcome.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -176,6 +181,7 @@
 			isa = PBXGroup;
 			children = (
 				B2E014C63007B520001EA90E /* DashboardView.swift */,
+				B27B58443007F900001A72FD /* GameOverView.swift */,
 			);
 			path = Dashboard;
 			sourceTree = "<group>";
@@ -274,8 +280,10 @@
 			files = (
 				B2E014C93007B87A001EA90E /* CompanyStage.swift in Sources */,
 				B2D7873D3007A9D2008F0050 /* GameViewModel.swift in Sources */,
+				B27B58433007F5E0001A72FD /* GameOutcome.swift in Sources */,
 				B28B59C730079B38001BB817 /* MainMenuView.swift in Sources */,
 				B2CF76FF3007BF0600EE47A2 /* Employee.swift in Sources */,
+				B27B58453007F900001A72FD /* GameOverView.swift in Sources */,
 				B2CF77013007BF3500EE47A2 /* CandidateFactory.swift in Sources */,
 				B2D787373007A83B008F0050 /* StartupCreationView.swift in Sources */,
 				B2E014C73007B520001EA90E /* DashboardView.swift in Sources */,

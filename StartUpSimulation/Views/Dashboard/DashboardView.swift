@@ -13,6 +13,7 @@ struct DashboardView: View {
     @State private var showEmployees = false
     @State private var monthResult: MonthResult?
     @State private var showMonthSummary = false
+    @State private var showGameOver = false
 
     private let gridColumns = [
         GridItem(.flexible(), spacing: 12),
@@ -103,6 +104,10 @@ struct DashboardView: View {
             if let monthResult {
                 MonthSummaryView(result: monthResult)
             }
+        }
+        .fullScreenCover(isPresented: $showGameOver) {
+            GameOverView()
+                .environmentObject(gameViewModel)
         }
         
     }
@@ -308,7 +313,12 @@ struct DashboardView: View {
     private var endMonthButton: some View {
         Button {
             monthResult = gameViewModel.advanceMonth()
-            showMonthSummary = true
+
+            if gameViewModel.gameOutcome == .active {
+                showMonthSummary = true
+            } else {
+                showGameOver = true
+            }
         } label: {
             HStack {
                 Image(systemName: "calendar.badge.clock")

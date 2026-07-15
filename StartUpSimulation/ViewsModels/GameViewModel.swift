@@ -10,7 +10,10 @@ import SwiftUI
 
 final class GameViewModel: ObservableObject {
     @Published var company: Company
+    @Published var gameOutcome: GameOutcome = .active
+
     let bankruptcyLimit: Double = -100_000
+    let unicornTarget: Double = 1_000_000_000
 
     init(company: Company = .empty) {
         self.company = company
@@ -27,6 +30,8 @@ final class GameViewModel: ObservableObject {
             name: cleanedName,
             industry: industry
         )
+        
+        gameOutcome = .active
     }
 
     func hire(_ candidate: Employee) -> Bool {
@@ -125,6 +130,9 @@ final class GameViewModel: ObservableObject {
             )
         )
 
+        updateGameOutcome()
+        
+
         return MonthResult(
             completedMonth: completedMonth,
             previousCash: previousCash,
@@ -140,6 +148,16 @@ final class GameViewModel: ObservableObject {
             totalExpenses: totalExpenses,
             monthlyProfit: monthlyProfit
         )
+    }
+    
+    private func updateGameOutcome() {
+        if company.cash <= bankruptcyLimit {
+            gameOutcome = .bankrupt
+        } else if company.marketValue >= unicornTarget {
+            gameOutcome = .unicorn
+        } else {
+            gameOutcome = .active
+        }
     }
 
     private func updateProductQuality(
