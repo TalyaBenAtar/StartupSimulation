@@ -9,14 +9,23 @@ import SwiftUI
 
 struct GameOverView: View {
     @EnvironmentObject private var gameViewModel: GameViewModel
-    @Environment(\.dismiss) private var dismiss
+
+    let onReturnToMainMenu: () -> Void
 
     var body: some View {
         ZStack {
             LinearGradient(
                 colors: [
-                    Color(red: 0.08, green: 0.10, blue: 0.18),
-                    Color(red: 0.12, green: 0.20, blue: 0.32)
+                    Color(
+                        red: 0.08,
+                        green: 0.10,
+                        blue: 0.18
+                    ),
+                    Color(
+                        red: 0.12,
+                        green: 0.20,
+                        blue: 0.32
+                    )
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
@@ -31,58 +40,82 @@ struct GameOverView: View {
                     .foregroundColor(outcomeColor)
 
                 Text(outcomeTitle)
-                    .font(.system(size: 34, weight: .bold))
+                    .font(
+                        .system(
+                            size: 34,
+                            weight: .bold
+                        )
+                    )
                     .foregroundColor(.white)
                     .multilineTextAlignment(.center)
 
                 Text(outcomeMessage)
                     .font(.headline)
-                    .foregroundColor(.white.opacity(0.7))
+                    .foregroundColor(
+                        .white.opacity(0.7)
+                    )
                     .multilineTextAlignment(.center)
 
                 VStack(spacing: 10) {
                     resultRow(
                         title: "Final Month",
-                        value: "\(gameViewModel.company.month)"
+                        value:
+                            "\(gameViewModel.company.month)"
                     )
 
                     resultRow(
                         title: "Final Cash",
-                        value: formatCurrency(gameViewModel.company.cash)
+                        value: formatCurrency(
+                            gameViewModel.company.cash
+                        )
                     )
 
                     resultRow(
                         title: "Market Value",
-                        value: formatCurrency(gameViewModel.company.marketValue)
+                        value: formatCurrency(
+                            gameViewModel.company
+                                .marketValue
+                        )
                     )
 
                     resultRow(
                         title: "Employees",
-                        value: "\(gameViewModel.company.employeeCount)"
+                        value:
+                            "\(gameViewModel.company.employeeCount)"
                     )
                 }
                 .padding()
                 .background(
-                    RoundedRectangle(cornerRadius: 18)
-                        .fill(Color.white.opacity(0.09))
+                    RoundedRectangle(
+                        cornerRadius: 18
+                    )
+                    .fill(
+                        Color.white.opacity(0.09)
+                    )
                 )
 
                 Spacer()
 
                 Button {
-                    gameViewModel.company = .empty
-                    gameViewModel.gameOutcome = .active
-                    dismiss()
+                    returnToMainMenu()
                 } label: {
-                    Text("Return to Dashboard")
-                        .font(.headline)
-                        .foregroundColor(.black)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(outcomeColor)
+                    HStack {
+                        Image(
+                            systemName: "house.fill"
                         )
+
+                        Text("Return to Main Menu")
+                            .font(.headline)
+                    }
+                    .foregroundColor(.black)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(
+                        RoundedRectangle(
+                            cornerRadius: 16
+                        )
+                        .fill(outcomeColor)
+                    )
                 }
             }
             .padding(24)
@@ -94,10 +127,15 @@ struct GameOverView: View {
         switch gameViewModel.gameOutcome {
         case .active:
             return "Game Over"
+
         case .bankrupt:
             return "Startup Bankrupt"
+
         case .unicorn:
             return "Unicorn Achieved"
+
+        case .sold:
+            return "Startup Acquired!"
         }
     }
 
@@ -105,10 +143,21 @@ struct GameOverView: View {
         switch gameViewModel.gameOutcome {
         case .active:
             return ""
+
         case .bankrupt:
-            return "Your company crossed the debt limit. The runway has officially become a crater."
+            return """
+            Your company crossed the debt limit. The runway has officially become a crater.
+            """
+
         case .unicorn:
-            return "Your startup reached a valuation of one billion dollars. Investors may now use the word “disruptive” without irony."
+            return """
+            Your startup reached a valuation of one billion dollars. Investors may now use the word “disruptive” without irony.
+            """
+
+        case .sold:
+            return """
+            Your startup was acquired for \(formatCurrency(gameViewModel.lastStartupSaleValue)). The money has been added to your founder wealth.
+            """
         }
     }
 
@@ -116,10 +165,17 @@ struct GameOverView: View {
         switch gameViewModel.gameOutcome {
         case .active:
             return "flag.checkered"
+
         case .bankrupt:
-            return "creditcard.trianglebadge.exclamationmark"
+            return """
+            creditcard.trianglebadge.exclamationmark
+            """
+
         case .unicorn:
             return "sparkles"
+
+        case .sold:
+            return "building.2.crop.circle.fill"
         }
     }
 
@@ -127,11 +183,23 @@ struct GameOverView: View {
         switch gameViewModel.gameOutcome {
         case .active:
             return .green
+
         case .bankrupt:
             return .red
+
         case .unicorn:
             return .green
+
+        case .sold:
+            return .green
         }
+    }
+
+    private func returnToMainMenu() {
+        gameViewModel.company = .empty
+        gameViewModel.gameOutcome = .active
+
+        onReturnToMainMenu()
     }
 
     private func resultRow(
@@ -140,7 +208,9 @@ struct GameOverView: View {
     ) -> some View {
         HStack {
             Text(title)
-                .foregroundColor(.white.opacity(0.65))
+                .foregroundColor(
+                    .white.opacity(0.65)
+                )
 
             Spacer()
 
@@ -150,21 +220,25 @@ struct GameOverView: View {
         }
     }
 
-    private func formatCurrency(_ amount: Double) -> String {
+    private func formatCurrency(
+        _ amount: Double
+    ) -> String {
         let sign = amount < 0 ? "-" : ""
         let absoluteAmount = abs(amount)
 
         if absoluteAmount >= 1_000_000_000 {
             return sign + String(
                 format: "$%.1fB",
-                absoluteAmount / 1_000_000_000
+                absoluteAmount /
+                    1_000_000_000
             )
         }
 
         if absoluteAmount >= 1_000_000 {
             return sign + String(
                 format: "$%.1fM",
-                absoluteAmount / 1_000_000
+                absoluteAmount /
+                    1_000_000
             )
         }
 
@@ -175,22 +249,29 @@ struct GameOverView: View {
             )
         }
 
-        return sign + "$\(Int(absoluteAmount))"
+        return sign +
+            "$\(Int(absoluteAmount))"
     }
 }
 
-struct GameOverView_Previews: PreviewProvider {
+struct GameOverView_Previews:
+    PreviewProvider {
+
     static var previews: some View {
         let game = GameViewModel(
             company: Company.newCompany(
                 name: "Mowers",
-                industry: .artificialIntelligence
+                industry:
+                    .artificialIntelligence
             )
         )
 
-        game.gameOutcome = .bankrupt
+        game.lastStartupSaleValue = game.company.marketValue
+        game.gameOutcome = .sold
 
-        return GameOverView()
-            .environmentObject(game)
+        return GameOverView(
+            onReturnToMainMenu: {}
+        )
+        .environmentObject(game)
     }
 }

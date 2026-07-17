@@ -11,12 +11,18 @@ import SwiftUI
 final class GameViewModel: ObservableObject {
     @Published var company: Company
     @Published var gameOutcome: GameOutcome = .active
+    @Published var playerProfile: PlayerProfile
+    @Published var lastStartupSaleValue: Double = 0
 
     let bankruptcyLimit: Double = -100_000
     let unicornTarget: Double = 1_000_000_000
 
-    init(company: Company = .empty) {
+    init(
+        company: Company = .empty,
+        playerProfile: PlayerProfile = .empty
+    ) {
         self.company = company
+        self.playerProfile = playerProfile
     }
 
     func startNewGame(
@@ -24,14 +30,25 @@ final class GameViewModel: ObservableObject {
         industry: Industry
     ) {
         let cleanedName = companyName
-            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .trimmingCharacters(
+                in: .whitespacesAndNewlines
+            )
 
         company = Company.newCompany(
             name: cleanedName,
             industry: industry
         )
-        
+
+        lastStartupSaleValue = 0
         gameOutcome = .active
+    }
+    
+    func sellStartup() {
+        let saleValue = company.marketValue
+
+        lastStartupSaleValue = saleValue
+        playerProfile.founderWealth += saleValue
+        gameOutcome = .sold
     }
 
     func hire(_ candidate: Employee) -> Bool {
@@ -49,9 +66,8 @@ final class GameViewModel: ObservableObject {
         company.cash -= candidate.hiringCost
         company.employees.append(hiredEmployee)
 
-        company.employeeMorale = clampedPercentage(
-            company.employeeMorale +
-            candidate.moraleImpact
+        changeMorale(
+            by: candidate.moraleImpact
         )
 
         return true
@@ -64,9 +80,7 @@ final class GameViewModel: ObservableObject {
             $0.id == employee.id
         }
 
-        company.employeeMorale = clampedPercentage(
-            company.employeeMorale - 5
-        )
+        changeMorale(by: -5)
 
         return true
     }
@@ -78,7 +92,68 @@ final class GameViewModel: ObservableObject {
 
         return company.cash >= requiredCash
     }
+    
+    
+    func fixBugs() {
+        let cost = 2_000.0
 
+        company.cash -= cost
+        changeProductQuality(by: 2)
+
+        company.patchVersion += 1
+    }
+
+    func developFeature() {
+        let cost = 8_000.0
+
+        company.cash -= cost
+        changeProductQuality(by: 6)
+
+        company.minorVersion += 1
+        company.patchVersion = 0
+    }
+
+    func majorRelease() {
+        let cost = 20_000.0
+
+        company.cash -= cost
+        changeProductQuality(by: 15)
+
+        company.majorVersion += 1
+        company.minorVersion = 0
+        company.patchVersion = 0
+    }
+    
+    func runOneTimeMarketingCampaign(
+        _ campaign: MarketingCampaign
+    ) {
+        company.cash -= campaign.oneTimeCost
+        company.monthlyMarketingSpend += campaign.oneTimeCost
+
+        let gain = campaign.generateOneTimeGain()
+
+        changeBrandAwareness(by: gain)
+
+        company.lastMarketingCampaign = campaign
+        company.lastMarketingGain = gain
+        company.lastMarketingWasSubscription = false
+    }
+
+    func startMonthlyMarketingCampaign(
+        _ campaign: MarketingCampaign
+    ) {
+        company.activeMonthlyMarketingCampaign = campaign
+    }
+
+    func cancelMonthlyMarketingCampaign() {
+        company.activeMonthlyMarketingCampaign = nil
+    }
+
+    func isMarketingCampaignActive(
+        _ campaign: MarketingCampaign
+    ) -> Bool {
+        company.activeMonthlyMarketingCampaign == campaign
+    }
 
     func advanceMonth() -> MonthResult {
         let completedMonth = company.month
@@ -86,8 +161,18 @@ final class GameViewModel: ObservableObject {
         let previousCash = company.cash
         let previousRevenue = company.monthlyRevenue
         let previousMarketValue = company.marketValue
-        let previousProductQuality = company.productQuality
-        let previousMorale = company.employeeMorale
+
+        let previousProductQuality =
+            company.productQuality -
+            company.monthlyProductQualityChange
+
+        let previousMorale =
+            company.employeeMorale -
+            company.monthlyMoraleChange
+
+        let previousBrandAwareness =
+            company.brandAwareness -
+            company.monthlyBrandAwarenessChange
 
         let productContribution = company.employees.reduce(0.0) {
             $0 + $1.productContribution
@@ -101,9 +186,9 @@ final class GameViewModel: ObservableObject {
             $0 + $1.marketValueContribution
         }
 
-        updateProductQuality(
-            contribution: productContribution
-        )
+        processMonthlyMarketing()
+        updateBrandAwarenessMaintenance()
+        updateProductQuality()
 
         updateRevenue(
             contribution: revenueContribution
@@ -116,6 +201,7 @@ final class GameViewModel: ObservableObject {
         )
 
         let totalExpenses = company.monthlyExpenses
+
         let monthlyProfit =
             company.monthlyRevenue -
             totalExpenses
@@ -131,9 +217,8 @@ final class GameViewModel: ObservableObject {
         )
 
         updateGameOutcome()
-        
 
-        return MonthResult(
+        let result = MonthResult(
             completedMonth: completedMonth,
             previousCash: previousCash,
             newCash: company.cash,
@@ -143,11 +228,36 @@ final class GameViewModel: ObservableObject {
             newMarketValue: company.marketValue,
             previousProductQuality: previousProductQuality,
             newProductQuality: company.productQuality,
+            totalProductQualityChange:
+                company.monthlyProductQualityChange,
             previousMorale: previousMorale,
             newMorale: company.employeeMorale,
+            totalMoraleChange:
+                company.monthlyMoraleChange,
+            previousBrandAwareness:
+                previousBrandAwareness,
+            newBrandAwareness:
+                company.brandAwareness,
+            totalBrandAwarenessChange:
+                company.monthlyBrandAwarenessChange,
+            marketingSpend:
+                company.monthlyMarketingSpend,
+            marketingCampaign:
+                company.lastMarketingCampaign,
+            marketingCampaignGain:
+                company.lastMarketingGain,
+            marketingWasSubscription:
+                company.lastMarketingWasSubscription,
             totalExpenses: totalExpenses,
             monthlyProfit: monthlyProfit
         )
+
+        company.monthlyProductQualityChange = 0
+        company.monthlyMoraleChange = 0
+        company.monthlyBrandAwarenessChange = 0
+        company.monthlyMarketingSpend = 0
+
+        return result
     }
     
     private func updateGameOutcome() {
@@ -160,37 +270,50 @@ final class GameViewModel: ObservableObject {
         }
     }
 
-    private func updateProductQuality(
-        contribution: Double
-    ) {
-        let moraleMultiplier =
-            Double(company.employeeMorale) / 100.0
+    private func updateProductQuality() {
+        let maintenanceLoss: Int
 
-        let founderContribution = 0.5
+        switch company.employeeCount {
+        case 0:
+            maintenanceLoss = 2
 
-        let employeeGrowth =
-            contribution *
-            0.35 *
-            moraleMultiplier
+        case 1...3:
+            maintenanceLoss = 1
 
-        let maintenanceLoss: Double
-
-        if company.employees.isEmpty {
-            maintenanceLoss = 1.5
-        } else {
-            maintenanceLoss = 0.5
+        default:
+            maintenanceLoss = 0
         }
 
-        let rawChange =
-            founderContribution +
-            employeeGrowth -
-            maintenanceLoss
-
-        let qualityChange = Int(rawChange.rounded())
-
-        company.productQuality = clampedPercentage(
-            company.productQuality + qualityChange
+        changeProductQuality(
+            by: -maintenanceLoss
         )
+    }
+    
+    private func processMonthlyMarketing() {
+        guard let campaign =
+            company.activeMonthlyMarketingCampaign
+        else {
+            return
+        }
+
+        let gain = campaign.generateMonthlyGain()
+
+        changeBrandAwareness(by: gain)
+
+        company.monthlyMarketingSpend +=
+            campaign.monthlyCost
+
+        company.lastMarketingCampaign = campaign
+        company.lastMarketingGain = gain
+        company.lastMarketingWasSubscription = true
+    }
+
+    private func updateBrandAwarenessMaintenance() {
+        guard company.activeMonthlyMarketingCampaign == nil else {
+            return
+        }
+
+        changeBrandAwareness(by: -1)
     }
 
     private func updateRevenue(
@@ -234,7 +357,6 @@ final class GameViewModel: ObservableObject {
 
     private func updateMorale() {
         guard !company.employees.isEmpty else {
-            company.employeeMorale = 80
             return
         }
 
@@ -244,13 +366,12 @@ final class GameViewModel: ObservableObject {
             moraleChange -= 2
         }
 
-        if company.monthlyRevenue > company.monthlyExpenses * 1.5 {
+        if company.monthlyRevenue >
+            company.monthlyExpenses * 1.5 {
             moraleChange += 1
         }
 
-        company.employeeMorale = clampedPercentage(
-            company.employeeMorale + moraleChange
-        )
+        changeMorale(by: moraleChange)
     }
 
     private func updateMarketValue(
@@ -296,6 +417,48 @@ final class GameViewModel: ObservableObject {
             movementTowardTarget +
             marketNoise
         )
+    }
+    
+    private func changeProductQuality(by amount: Int) {
+        let previousQuality = company.productQuality
+
+        company.productQuality = clampedPercentage(
+            company.productQuality + amount
+        )
+
+        let actualChange =
+            company.productQuality - previousQuality
+
+        company.monthlyProductQualityChange += actualChange
+    }
+
+    private func changeMorale(by amount: Int) {
+        let previousMorale = company.employeeMorale
+
+        company.employeeMorale = clampedPercentage(
+            company.employeeMorale + amount
+        )
+
+        let actualChange =
+            company.employeeMorale - previousMorale
+
+        company.monthlyMoraleChange += actualChange
+    }
+    
+    private func changeBrandAwareness(by amount: Int) {
+        let previousAwareness =
+            company.brandAwareness
+
+        company.brandAwareness = clampedPercentage(
+            company.brandAwareness + amount
+        )
+
+        let actualChange =
+            company.brandAwareness -
+            previousAwareness
+
+        company.monthlyBrandAwarenessChange +=
+            actualChange
     }
 
     private func clampedPercentage(_ value: Int) -> Int {

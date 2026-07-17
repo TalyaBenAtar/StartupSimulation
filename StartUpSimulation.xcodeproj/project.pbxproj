@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B23CB4E4300A1F3A00A336E9 /* ProductView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B23CB4E3300A1F3A00A336E9 /* ProductView.swift */; };
+		B23CB4E7300A2EC300A336E9 /* MarketingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B23CB4E6300A2EC200A336E9 /* MarketingView.swift */; };
+		B23CB4E9300A2EEC00A336E9 /* MarketingCampaign.swift in Sources */ = {isa = PBXBuildFile; fileRef = B23CB4E8300A2EEC00A336E9 /* MarketingCampaign.swift */; };
 		B27B58413007EAFD001A72FD /* MarketValuePoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27B58403007EAFD001A72FD /* MarketValuePoint.swift */; };
 		B27B58433007F5E0001A72FD /* GameOutcome.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27B58423007F5E0001A72FD /* GameOutcome.swift */; };
 		B27B58453007F900001A72FD /* GameOverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27B58443007F900001A72FD /* GameOverView.swift */; };
@@ -16,6 +19,7 @@
 		B28B59C730079B38001BB817 /* MainMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28B59C630079B38001BB817 /* MainMenuView.swift */; };
 		B28B59C930079B46001BB817 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B28B59C830079B46001BB817 /* Assets.xcassets */; };
 		B28B59CC30079B46001BB817 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B28B59CB30079B46001BB817 /* Preview Assets.xcassets */; };
+		B298A1A9300A73C700157856 /* PlayerProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B298A1A8300A73C700157856 /* PlayerProfile.swift */; };
 		B2CF76FD3007BEC100EE47A2 /* EmployeeSeniority.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2CF76FC3007BEC100EE47A2 /* EmployeeSeniority.swift */; };
 		B2CF76FF3007BF0600EE47A2 /* Employee.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2CF76FE3007BF0600EE47A2 /* Employee.swift */; };
 		B2CF77013007BF3500EE47A2 /* CandidateFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2CF77003007BF3400EE47A2 /* CandidateFactory.swift */; };
@@ -29,6 +33,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B23CB4E3300A1F3A00A336E9 /* ProductView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductView.swift; sourceTree = "<group>"; };
+		B23CB4E6300A2EC200A336E9 /* MarketingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingView.swift; sourceTree = "<group>"; };
+		B23CB4E8300A2EEC00A336E9 /* MarketingCampaign.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingCampaign.swift; sourceTree = "<group>"; };
 		B27B58403007EAFD001A72FD /* MarketValuePoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketValuePoint.swift; sourceTree = "<group>"; };
 		B27B58423007F5E0001A72FD /* GameOutcome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOutcome.swift; sourceTree = "<group>"; };
 		B27B58443007F900001A72FD /* GameOverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverView.swift; sourceTree = "<group>"; };
@@ -39,6 +46,7 @@
 		B28B59C630079B38001BB817 /* MainMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuView.swift; sourceTree = "<group>"; };
 		B28B59C830079B46001BB817 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B28B59CB30079B46001BB817 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		B298A1A8300A73C700157856 /* PlayerProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerProfile.swift; sourceTree = "<group>"; };
 		B2CF76FC3007BEC100EE47A2 /* EmployeeSeniority.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeSeniority.swift; sourceTree = "<group>"; };
 		B2CF76FE3007BF0600EE47A2 /* Employee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Employee.swift; sourceTree = "<group>"; };
 		B2CF77003007BF3400EE47A2 /* CandidateFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CandidateFactory.swift; sourceTree = "<group>"; };
@@ -62,6 +70,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B23CB4E2300A1EF900A336E9 /* Product */ = {
+			isa = PBXGroup;
+			children = (
+				B23CB4E3300A1F3A00A336E9 /* ProductView.swift */,
+			);
+			path = Product;
+			sourceTree = "<group>";
+		};
+		B23CB4E5300A2EA100A336E9 /* Marketing */ = {
+			isa = PBXGroup;
+			children = (
+				B23CB4E6300A2EC200A336E9 /* MarketingView.swift */,
+			);
+			path = Marketing;
+			sourceTree = "<group>";
+		};
 		B28B59B830079B37001BB817 = {
 			isa = PBXGroup;
 			children = (
@@ -114,6 +138,8 @@
 				B27CD76D3007E1930083F6E0 /* MonthResult.swift */,
 				B27B58403007EAFD001A72FD /* MarketValuePoint.swift */,
 				B27B58423007F5E0001A72FD /* GameOutcome.swift */,
+				B23CB4E8300A2EEC00A336E9 /* MarketingCampaign.swift */,
+				B298A1A8300A73C700157856 /* PlayerProfile.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -121,6 +147,8 @@
 		B2952C733007A3B900AEEB5C /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B23CB4E5300A2EA100A336E9 /* Marketing */,
+				B23CB4E2300A1EF900A336E9 /* Product */,
 				B2952C7D3007A49700AEEB5C /* Events */,
 				B2952C7C3007A48800AEEB5C /* Finance */,
 				B2952C7B3007A47800AEEB5C /* Employees */,
@@ -282,16 +310,20 @@
 				B2D7873D3007A9D2008F0050 /* GameViewModel.swift in Sources */,
 				B27B58433007F5E0001A72FD /* GameOutcome.swift in Sources */,
 				B28B59C730079B38001BB817 /* MainMenuView.swift in Sources */,
+				B298A1A9300A73C700157856 /* PlayerProfile.swift in Sources */,
 				B2CF76FF3007BF0600EE47A2 /* Employee.swift in Sources */,
+				B23CB4E7300A2EC300A336E9 /* MarketingView.swift in Sources */,
 				B27B58453007F900001A72FD /* GameOverView.swift in Sources */,
 				B2CF77013007BF3500EE47A2 /* CandidateFactory.swift in Sources */,
 				B2D787373007A83B008F0050 /* StartupCreationView.swift in Sources */,
 				B2E014C73007B520001EA90E /* DashboardView.swift in Sources */,
 				B28B59C530079B38001BB817 /* StartUpSimulationApp.swift in Sources */,
+				B23CB4E4300A1F3A00A336E9 /* ProductView.swift in Sources */,
 				B2CF77033007BFB300EE47A2 /* EmployeesView.swift in Sources */,
 				B27CD76C3007DDA50083F6E0 /* EmployeeRole.swift in Sources */,
 				B2D787393007A92C008F0050 /* Industry.swift in Sources */,
 				B27B58413007EAFD001A72FD /* MarketValuePoint.swift in Sources */,
+				B23CB4E9300A2EEC00A336E9 /* MarketingCampaign.swift in Sources */,
 				B2E014C53007B0CF001EA90E /* Company.swift in Sources */,
 				B2CF76FD3007BEC100EE47A2 /* EmployeeSeniority.swift in Sources */,
 				B27CD76E3007E1940083F6E0 /* MonthResult.swift in Sources */,

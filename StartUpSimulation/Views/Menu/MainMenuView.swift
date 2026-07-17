@@ -8,13 +8,23 @@
 import SwiftUI
 
 struct MainMenuView: View {
+    @State private var showStartupCreation = false
+
     var body: some View {
         NavigationStack {
             ZStack {
                 LinearGradient(
                     colors: [
-                        Color(red: 0.08, green: 0.10, blue: 0.18),
-                        Color(red: 0.12, green: 0.20, blue: 0.32)
+                        Color(
+                            red: 0.08,
+                            green: 0.10,
+                            blue: 0.18
+                        ),
+                        Color(
+                            red: 0.12,
+                            green: 0.20,
+                            blue: 0.32
+                        )
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
@@ -24,24 +34,36 @@ struct MainMenuView: View {
                 VStack(spacing: 24) {
                     Spacer()
 
-                    Image(systemName: "chart.line.uptrend.xyaxis")
-                        .font(.system(size: 70))
-                        .foregroundColor(.green)
+                    Image(
+                        systemName:
+                            "chart.line.uptrend.xyaxis"
+                    )
+                    .font(.system(size: 70))
+                    .foregroundColor(.green)
 
                     Text("Startup Simulation")
-                        .font(.system(size: 34, weight: .bold))
+                        .font(
+                            .system(
+                                size: 34,
+                                weight: .bold
+                            )
+                        )
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)
 
-                    Text("Build it. Grow it. Survive it.")
-                        .font(.headline)
-                        .foregroundColor(.white.opacity(0.75))
+                    Text(
+                        "Build it. Grow it. Survive it."
+                    )
+                    .font(.headline)
+                    .foregroundColor(
+                        .white.opacity(0.75)
+                    )
 
                     Spacer()
 
                     VStack(spacing: 16) {
-                        NavigationLink {
-                            StartupCreationView()
+                        Button {
+                            showStartupCreation = true
                         } label: {
                             MenuButtonContent(
                                 title: "New Game",
@@ -63,7 +85,8 @@ struct MainMenuView: View {
                         } label: {
                             MenuButtonContent(
                                 title: "How to Play",
-                                icon: "questionmark.circle.fill"
+                                icon:
+                                    "questionmark.circle.fill"
                             )
                         }
                     }
@@ -73,8 +96,16 @@ struct MainMenuView: View {
                 .padding(.horizontal, 30)
             }
             .navigationBarHidden(true)
+            .navigationDestination(
+                isPresented: $showStartupCreation
+            ) {
+                StartupCreationView(
+                    onReturnToMainMenu: {
+                        showStartupCreation = false
+                    }
+                )
+            }
         }
-        
     }
 }
 
@@ -99,17 +130,27 @@ struct MenuButtonContent: View {
         .frame(maxWidth: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color.white.opacity(0.12))
+                .fill(
+                    Color.white.opacity(0.12)
+                )
         )
         .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.white.opacity(0.18), lineWidth: 1)
+                .stroke(
+                    Color.white.opacity(0.18),
+                    lineWidth: 1
+                )
         )
     }
 }
 
-struct MainMenuView_Previews: PreviewProvider {
+struct MainMenuView_Previews:
+    PreviewProvider {
+
     static var previews: some View {
         MainMenuView()
+            .environmentObject(
+                GameViewModel()
+            )
     }
 }

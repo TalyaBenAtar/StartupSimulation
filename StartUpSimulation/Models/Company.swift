@@ -18,7 +18,23 @@ struct Company {
     var baseMonthlyExpenses: Double
 
     var employeeMorale: Int
+
     var productQuality: Int
+    var majorVersion: Int
+    var minorVersion: Int
+    var patchVersion: Int
+
+    var brandAwareness: Int
+    var activeMonthlyMarketingCampaign: MarketingCampaign?
+
+    var monthlyProductQualityChange: Int
+    var monthlyMoraleChange: Int
+    var monthlyBrandAwarenessChange: Int
+    var monthlyMarketingSpend: Double
+
+    var lastMarketingCampaign: MarketingCampaign?
+    var lastMarketingGain: Int
+    var lastMarketingWasSubscription: Bool
 
     var month: Int
     var employees: [Employee]
@@ -34,8 +50,14 @@ struct Company {
         }
     }
 
+    var marketingSubscriptionExpenses: Double {
+        activeMonthlyMarketingCampaign?.monthlyCost ?? 0
+    }
+
     var monthlyExpenses: Double {
-        baseMonthlyExpenses + salaryExpenses
+        baseMonthlyExpenses +
+        salaryExpenses +
+        marketingSubscriptionExpenses
     }
 
     var monthlyProfit: Double {
@@ -59,6 +81,18 @@ struct Company {
             baseMonthlyExpenses: 8_000,
             employeeMorale: 80,
             productQuality: 20,
+            majorVersion: 1,
+            minorVersion: 0,
+            patchVersion: 0,
+            brandAwareness: 10,
+            activeMonthlyMarketingCampaign: nil,
+            monthlyProductQualityChange: 0,
+            monthlyMoraleChange: 0,
+            monthlyBrandAwarenessChange: 0,
+            monthlyMarketingSpend: 0,
+            lastMarketingCampaign: nil,
+            lastMarketingGain: 0,
+            lastMarketingWasSubscription: false,
             month: 1,
             employees: [],
             marketValueHistory: [
@@ -80,6 +114,18 @@ struct Company {
             baseMonthlyExpenses: 0,
             employeeMorale: 0,
             productQuality: 0,
+            majorVersion: 0,
+            minorVersion: 0,
+            patchVersion: 0,
+            brandAwareness: 0,
+            activeMonthlyMarketingCampaign: nil,
+            monthlyProductQualityChange: 0,
+            monthlyMoraleChange: 0,
+            monthlyBrandAwarenessChange: 0,
+            monthlyMarketingSpend: 0,
+            lastMarketingCampaign: nil,
+            lastMarketingGain: 0,
+            lastMarketingWasSubscription: false,
             month: 0,
             employees: [],
             marketValueHistory: []

@@ -11,4 +11,5 @@ enum GameOutcome {
     case active
     case bankrupt
     case unicorn
+    case sold
 }

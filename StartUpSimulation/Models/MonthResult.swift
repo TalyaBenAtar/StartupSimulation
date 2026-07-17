@@ -21,9 +21,20 @@ struct MonthResult {
 
     let previousProductQuality: Int
     let newProductQuality: Int
+    let totalProductQualityChange: Int
 
     let previousMorale: Int
     let newMorale: Int
+    let totalMoraleChange: Int
+
+    let previousBrandAwareness: Int
+    let newBrandAwareness: Int
+    let totalBrandAwarenessChange: Int
+
+    let marketingSpend: Double
+    let marketingCampaign: MarketingCampaign?
+    let marketingCampaignGain: Int
+    let marketingWasSubscription: Bool
 
     let totalExpenses: Double
     let monthlyProfit: Double
@@ -41,10 +52,18 @@ struct MonthResult {
     }
 
     var productQualityChange: Int {
-        newProductQuality - previousProductQuality
+        totalProductQualityChange
     }
 
     var moraleChange: Int {
-        newMorale - previousMorale
+        totalMoraleChange
+    }
+
+    var brandAwarenessChange: Int {
+        totalBrandAwarenessChange
+    }
+
+    var hadMarketingActivity: Bool {
+        marketingSpend > 0
     }
 }

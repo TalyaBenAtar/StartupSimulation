@@ -9,6 +9,7 @@ import SwiftUI
 
 struct StartupCreationView: View {
     @EnvironmentObject private var gameViewModel: GameViewModel
+    let onReturnToMainMenu: () -> Void
     
     @State private var companyName = ""
     @State private var selectedIndustry: Industry = .artificialIntelligence
@@ -106,9 +107,11 @@ struct StartupCreationView: View {
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $startGame) {
-                    DashboardView()
-                        .environmentObject(gameViewModel)
-                }
+            DashboardView(
+                onReturnToMainMenu: onReturnToMainMenu
+            )
+            .environmentObject(gameViewModel)
+        }
     }
 
     private var companyNameIsValid: Bool {
@@ -116,6 +119,8 @@ struct StartupCreationView: View {
     }
 
 }
+
+
 
 struct SelectionCard: View {
     let title: String
@@ -164,8 +169,10 @@ struct SelectionCard: View {
 struct StartupCreationView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            StartupCreationView()
-                .environmentObject(GameViewModel())
+            StartupCreationView(
+                onReturnToMainMenu: {}
+            )
+            .environmentObject(GameViewModel())
         }
     }
 }

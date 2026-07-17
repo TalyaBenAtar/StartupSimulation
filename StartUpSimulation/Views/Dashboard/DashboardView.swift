@@ -9,12 +9,19 @@ import SwiftUI
 import Charts
 
 struct DashboardView: View {
+    let onReturnToMainMenu: () -> Void
+    
     @EnvironmentObject private var gameViewModel: GameViewModel
+    
     @State private var showEmployees = false
+    @State private var showProduct = false
+    @State private var showMarketing = false
     @State private var monthResult: MonthResult?
     @State private var showMonthSummary = false
     @State private var showGameOver = false
+    @State private var showSellConfirmation = false
 
+    
     private let gridColumns = [
         GridItem(.flexible(), spacing: 12),
         GridItem(.flexible(), spacing: 12)
@@ -89,28 +96,69 @@ struct DashboardView: View {
                     quickActions
 
                     endMonthButton
+                    
+                    sellStartupButton
                 }
                 .padding(.horizontal, 18)
                 .padding(.top, 14)
                 .padding(.bottom, 30)
             }
         }
+        
         .navigationBarBackButtonHidden(true)
+        
         .navigationDestination(isPresented: $showEmployees) {
                     EmployeesView()
                         .environmentObject(gameViewModel)
                 }
+        
+        .navigationDestination(isPresented: $showProduct) {
+            ProductView()
+                .environmentObject(gameViewModel)
+        }
+        
+        .navigationDestination(isPresented: $showMarketing) {
+            MarketingView(
+                gameViewModel: gameViewModel
+            )
+        }
+        
         .sheet(isPresented: $showMonthSummary) {
             if let monthResult {
                 MonthSummaryView(result: monthResult)
             }
         }
+        
         .fullScreenCover(isPresented: $showGameOver) {
-            GameOverView()
-                .environmentObject(gameViewModel)
+            GameOverView(
+                onReturnToMainMenu: {
+                    showGameOver = false
+                    onReturnToMainMenu()
+                }
+            )
+            .environmentObject(gameViewModel)
+        }
+        .confirmationDialog(
+            "Sell Startup",
+            isPresented: $showSellConfirmation,
+            titleVisibility: .visible
+        ) {
+
+            Button("Sell for \(formatCurrency(gameViewModel.company.marketValue))") {
+                gameViewModel.sellStartup()
+                showGameOver = true
+            }
+
+            Button("Cancel", role: .cancel) { }
+
+        } message: {
+            Text("Selling your startup ends the current game. The sale value will be added to your founder wealth.")
         }
         
+        
     }
+    
+    
 
     private func companyHeader(company: Company) -> some View {
         VStack(spacing: 6) {
@@ -288,7 +336,7 @@ struct DashboardView: View {
                     icon: "shippingbox.fill",
                     color: .yellow
                 ) {
-                    print("Product tapped")
+                    showProduct = true
                 }
 
                 DashboardActionButton(
@@ -296,7 +344,7 @@ struct DashboardView: View {
                     icon: "megaphone.fill",
                     color: .orange
                 ) {
-                    print("Marketing tapped")
+                    showMarketing = true
                 }
 
                 DashboardActionButton(
@@ -340,6 +388,32 @@ struct DashboardView: View {
         }
         .padding(.top, 4)
     }
+    
+    private var sellStartupButton: some View {
+        Button {
+            showSellConfirmation = true
+        } label: {
+            HStack {
+                Image(systemName: "building.2.fill")
+
+                Text("Sell Startup")
+                    .fontWeight(.bold)
+
+                Spacer()
+
+                Text(formatCurrency(gameViewModel.company.marketValue))
+                    .font(.subheadline.bold())
+            }
+            .foregroundColor(.white)
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.orange)
+            )
+        }
+    }
+    
 
     private func formatCurrency(_ amount: Double) -> String {
         if amount >= 1_000_000_000 {
@@ -654,7 +728,9 @@ struct MonthSummaryView: View {
 struct DashboardView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            DashboardView()
+            DashboardView(
+                onReturnToMainMenu: {}
+            )
                 .environmentObject(
                     GameViewModel(
                         company: Company.newCompany(
