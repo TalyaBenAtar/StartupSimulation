@@ -13,6 +13,7 @@ struct StartupCreationView: View {
     
     @State private var companyName = ""
     @State private var selectedIndustry: Industry = .artificialIntelligence
+    @State private var founderInvestment: Double = 0
     
     @State private var startGame = false
 
@@ -76,11 +77,107 @@ struct StartupCreationView: View {
                             }
                         }
                     }
+                    
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Founder Investment")
+                            .font(.headline)
+                            .foregroundColor(.white)
+
+                        Text(
+                            "Your startup always starts with $150K. You may add some of your personal wealth."
+                        )
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.65))
+
+                        VStack(spacing: 10) {
+                            HStack {
+                                Text("Available Wealth")
+                                    .foregroundColor(.white.opacity(0.7))
+
+                                Spacer()
+
+                                Text(
+                                    formatCurrency(
+                                        gameViewModel.playerProfile.founderWealth
+                                    )
+                                )
+                                .fontWeight(.bold)
+                                .foregroundColor(.green)
+                            }
+
+                            HStack {
+                                Text("Personal Investment")
+                                    .foregroundColor(.white.opacity(0.7))
+
+                                Spacer()
+
+                                Text(formatCurrency(founderInvestment))
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.white)
+                            }
+
+                            if maximumInvestment > 0 {
+                                Slider(
+                                    value: $founderInvestment,
+                                    in: 0...maximumInvestment,
+                                    step: investmentStep
+                                )
+                                .tint(.green)
+                            } else {
+                                HStack {
+                                    Image(systemName: "lock.fill")
+
+                                    Text(
+                                        "Sell a startup to earn founder wealth and unlock personal investment."
+                                    )
+                                    .font(.caption)
+                                }
+                                .foregroundColor(.white.opacity(0.55))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.vertical, 8)
+                            }
+
+                            HStack {
+                                Text("$0")
+
+                                Spacer()
+
+                                Text(formatCurrency(maximumInvestment))
+                            }
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.5))
+
+                            Divider()
+                                .overlay(Color.white.opacity(0.15))
+
+                            HStack {
+                                Text("Starting Company Cash")
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.white)
+
+                                Spacer()
+
+                                Text(
+                                    formatCurrency(
+                                        150_000 + founderInvestment
+                                    )
+                                )
+                                .font(.headline)
+                                .foregroundColor(.green)
+                            }
+                        }
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(Color.white.opacity(0.09))
+                        )
+                    }
 
                     Button {
                         gameViewModel.startNewGame(
                             companyName: companyName,
-                            industry: selectedIndustry
+                            industry: selectedIndustry,
+                            founderInvestment: founderInvestment
                         )
                         
                         startGame = true
@@ -116,6 +213,46 @@ struct StartupCreationView: View {
 
     private var companyNameIsValid: Bool {
         !companyName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+    
+    private var maximumInvestment: Double {
+        max(
+            0,
+            gameViewModel.playerProfile.founderWealth
+        )
+    }
+
+    private var investmentStep: Double {
+        maximumInvestment >= 10_000
+        ? 1_000
+        : 100
+    }
+    
+    private func formatCurrency(
+        _ amount: Double
+    ) -> String {
+        if amount >= 1_000_000_000 {
+            return String(
+                format: "$%.1fB",
+                amount / 1_000_000_000
+            )
+        }
+
+        if amount >= 1_000_000 {
+            return String(
+                format: "$%.1fM",
+                amount / 1_000_000
+            )
+        }
+
+        if amount >= 1_000 {
+            return String(
+                format: "$%.0fK",
+                amount / 1_000
+            )
+        }
+
+        return "$\(Int(amount))"
     }
 
 }

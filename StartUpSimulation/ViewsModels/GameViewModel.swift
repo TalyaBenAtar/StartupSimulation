@@ -16,6 +16,11 @@ final class GameViewModel: ObservableObject {
 
     let bankruptcyLimit: Double = -100_000
     let unicornTarget: Double = 1_000_000_000
+    
+    var hasActiveStartup: Bool {
+        !company.name.isEmpty &&
+            gameOutcome == .active
+    }
 
     init(
         company: Company = .empty,
@@ -27,28 +32,69 @@ final class GameViewModel: ObservableObject {
 
     func startNewGame(
         companyName: String,
-        industry: Industry
+        industry: Industry,
+        founderInvestment: Double
     ) {
         let cleanedName = companyName
             .trimmingCharacters(
                 in: .whitespacesAndNewlines
             )
 
+        let safeInvestment = min(
+            max(founderInvestment, 0),
+            playerProfile.founderWealth
+        )
+
+        playerProfile.founderWealth -=
+            safeInvestment
+
+        playerProfile.totalMoneyInvested +=
+            safeInvestment
+
         company = Company.newCompany(
             name: cleanedName,
             industry: industry
         )
 
+        company.cash += safeInvestment
+        
+        playerProfile.totalStartupsCreated += 1
+
         lastStartupSaleValue = 0
         gameOutcome = .active
     }
+
     
     func sellStartup() {
+        completeStartupSale(
+            outcome: .sold
+        )
+    }
+    
+    private func completeStartupSale(
+        outcome: GameOutcome
+    ) {
+        guard gameOutcome == .active else {
+            return
+        }
+
         let saleValue = company.marketValue
 
         lastStartupSaleValue = saleValue
-        playerProfile.founderWealth += saleValue
-        gameOutcome = .sold
+
+        playerProfile.founderWealth +=
+            saleValue
+
+        playerProfile.totalMoneyEarnedFromSales +=
+            saleValue
+
+        playerProfile.startupsSold += 1
+
+        if outcome == .unicorn {
+            playerProfile.unicornsCreated += 1
+        }
+
+        gameOutcome = outcome
     }
 
     func hire(_ candidate: Employee) -> Bool {
@@ -62,6 +108,7 @@ final class GameViewModel: ObservableObject {
         company.employees.append(
             hiredEmployee
         )
+        playerProfile.totalEmployeesHired += 1
 
         changeMorale(
             by: candidate.moraleImpact
@@ -81,6 +128,8 @@ final class GameViewModel: ObservableObject {
         company.employees.removeAll {
             $0.id == employee.id
         }
+        
+        playerProfile.totalEmployeesFired += 1
 
         changeMorale(by: -5)
 
@@ -383,12 +432,18 @@ final class GameViewModel: ObservableObject {
     }
     
     private func updateGameOutcome() {
+        guard gameOutcome == .active else {
+            return
+        }
+
         if company.cash <= bankruptcyLimit {
+            playerProfile.startupsBankrupt += 1
             gameOutcome = .bankrupt
+
         } else if company.marketValue >= unicornTarget {
-            gameOutcome = .unicorn
-        } else {
-            gameOutcome = .active
+            completeStartupSale(
+                outcome: .unicorn
+            )
         }
     }
 
