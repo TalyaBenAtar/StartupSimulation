@@ -52,19 +52,16 @@ final class GameViewModel: ObservableObject {
     }
 
     func hire(_ candidate: Employee) -> Bool {
-        let requiredCash =
-            candidate.hiringCost +
-            candidate.monthlySalary
-
-        guard company.cash >= requiredCash else {
-            return false
-        }
-
         var hiredEmployee = candidate
         hiredEmployee.hiredMonth = company.month
 
         company.cash -= candidate.hiringCost
-        company.employees.append(hiredEmployee)
+        company.monthlyHiringSpend +=
+            candidate.hiringCost
+
+        company.employees.append(
+            hiredEmployee
+        )
 
         changeMorale(
             by: candidate.moraleImpact
@@ -74,7 +71,12 @@ final class GameViewModel: ObservableObject {
     }
 
     func fire(_ employee: Employee) -> Bool {
-        company.cash -= employee.severanceCost
+        let severanceCost =
+            employee.severanceCost
+
+        company.cash -= severanceCost
+        company.monthlySeveranceSpend +=
+            severanceCost
 
         company.employees.removeAll {
             $0.id == employee.id
@@ -86,11 +88,12 @@ final class GameViewModel: ObservableObject {
     }
 
     func canAfford(_ candidate: Employee) -> Bool {
-        let requiredCash =
-            candidate.hiringCost +
-            candidate.monthlySalary
+        let projectedCash =
+            company.cash -
+            candidate.hiringCost
 
-        return company.cash >= requiredCash
+        return projectedCash >
+            bankruptcyLimit
     }
     
     
@@ -98,6 +101,8 @@ final class GameViewModel: ObservableObject {
         let cost = 2_000.0
 
         company.cash -= cost
+        company.monthlyProductSpend += cost
+
         changeProductQuality(by: 2)
 
         company.patchVersion += 1
@@ -107,6 +112,8 @@ final class GameViewModel: ObservableObject {
         let cost = 8_000.0
 
         company.cash -= cost
+        company.monthlyProductSpend += cost
+
         changeProductQuality(by: 6)
 
         company.minorVersion += 1
@@ -117,6 +124,8 @@ final class GameViewModel: ObservableObject {
         let cost = 20_000.0
 
         company.cash -= cost
+        company.monthlyProductSpend += cost
+
         changeProductQuality(by: 15)
 
         company.majorVersion += 1
@@ -128,15 +137,23 @@ final class GameViewModel: ObservableObject {
         _ campaign: MarketingCampaign
     ) {
         company.cash -= campaign.oneTimeCost
-        company.monthlyMarketingSpend += campaign.oneTimeCost
 
-        let gain = campaign.generateOneTimeGain()
+        company.monthlyMarketingSpend +=
+            campaign.oneTimeCost
+
+        let gain =
+            campaign.generateOneTimeGain()
 
         changeBrandAwareness(by: gain)
 
-        company.lastMarketingCampaign = campaign
-        company.lastMarketingGain = gain
-        company.lastMarketingWasSubscription = false
+        company.lastMarketingCampaign =
+            campaign
+
+        company.lastMarketingGain =
+            gain
+
+        company.lastMarketingWasSubscription =
+            false
     }
 
     func startMonthlyMarketingCampaign(
@@ -156,11 +173,19 @@ final class GameViewModel: ObservableObject {
     }
 
     func advanceMonth() -> MonthResult {
-        let completedMonth = company.month
+        let completedMonth =
+            company.month
 
-        let previousCash = company.cash
-        let previousRevenue = company.monthlyRevenue
-        let previousMarketValue = company.marketValue
+        // MARK: - Values Before Monthly Processing
+
+        let previousCash =
+            company.cash
+
+        let previousRevenue =
+            company.monthlyRevenue
+
+        let previousMarketValue =
+            company.marketValue
 
         let previousProductQuality =
             company.productQuality -
@@ -174,20 +199,52 @@ final class GameViewModel: ObservableObject {
             company.brandAwareness -
             company.monthlyBrandAwarenessChange
 
-        let productContribution = company.employees.reduce(0.0) {
-            $0 + $1.productContribution
-        }
+        // MARK: - Spending Already Made This Month
 
-        let revenueContribution = company.employees.reduce(0.0) {
-            $0 + $1.revenueContribution
-        }
+        let productSpending =
+            company.monthlyProductSpend
 
-        let marketValueContribution = company.employees.reduce(0.0) {
-            $0 + $1.marketValueContribution
-        }
+        let hiringSpending =
+            company.monthlyHiringSpend
+
+        let severanceSpending =
+            company.monthlySeveranceSpend
+
+        let oneTimeMarketingSpending =
+            company.monthlyMarketingSpend
+
+        let totalOneTimeSpending =
+            productSpending +
+            hiringSpending +
+            severanceSpending +
+            oneTimeMarketingSpending
+
+        // MARK: - Employee Contributions
+
+        let revenueContribution =
+            company.employees.reduce(0.0) {
+                total,
+                employee in
+
+                total +
+                    employee.revenueContribution
+            }
+
+        let marketValueContribution =
+            company.employees.reduce(0.0) {
+                total,
+                employee in
+
+                total +
+                    employee.marketValueContribution
+            }
+
+        // MARK: - Monthly Company Changes
 
         processMonthlyMarketing()
+
         updateBrandAwarenessMaintenance()
+
         updateProductQuality()
 
         updateRevenue(
@@ -197,16 +254,34 @@ final class GameViewModel: ObservableObject {
         updateMorale()
 
         updateMarketValue(
-            contribution: marketValueContribution
+            contribution:
+                marketValueContribution
         )
 
-        let totalExpenses = company.monthlyExpenses
+        // MARK: - Recurring Expenses
+
+        let operatingExpenses =
+            company.baseMonthlyExpenses
+
+        let salaryExpenses =
+            company.salaryExpenses
+
+        let marketingSubscriptionExpenses =
+            company.marketingSubscriptionExpenses
+
+        let totalRecurringExpenses =
+            operatingExpenses +
+            salaryExpenses +
+            marketingSubscriptionExpenses
 
         let monthlyProfit =
             company.monthlyRevenue -
-            totalExpenses
+            totalRecurringExpenses
 
+        // One-time spending was already removed
+        // when the player performed each action.
         company.cash += monthlyProfit
+
         company.month += 1
 
         company.marketValueHistory.append(
@@ -218,44 +293,91 @@ final class GameViewModel: ObservableObject {
 
         updateGameOutcome()
 
+        // MARK: - Month Result
+
         let result = MonthResult(
             completedMonth: completedMonth,
+
             previousCash: previousCash,
             newCash: company.cash,
+
             previousRevenue: previousRevenue,
             newRevenue: company.monthlyRevenue,
-            previousMarketValue: previousMarketValue,
-            newMarketValue: company.marketValue,
-            previousProductQuality: previousProductQuality,
-            newProductQuality: company.productQuality,
+
+            previousMarketValue:
+                previousMarketValue,
+            newMarketValue:
+                company.marketValue,
+
+            previousProductQuality:
+                previousProductQuality,
+            newProductQuality:
+                company.productQuality,
             totalProductQualityChange:
                 company.monthlyProductQualityChange,
-            previousMorale: previousMorale,
-            newMorale: company.employeeMorale,
+
+            previousMorale:
+                previousMorale,
+            newMorale:
+                company.employeeMorale,
             totalMoraleChange:
                 company.monthlyMoraleChange,
+
             previousBrandAwareness:
                 previousBrandAwareness,
             newBrandAwareness:
                 company.brandAwareness,
             totalBrandAwarenessChange:
                 company.monthlyBrandAwarenessChange,
+
             marketingSpend:
-                company.monthlyMarketingSpend,
+                oneTimeMarketingSpending +
+                marketingSubscriptionExpenses,
             marketingCampaign:
                 company.lastMarketingCampaign,
             marketingCampaignGain:
                 company.lastMarketingGain,
             marketingWasSubscription:
                 company.lastMarketingWasSubscription,
-            totalExpenses: totalExpenses,
-            monthlyProfit: monthlyProfit
+
+            operatingExpenses:
+                operatingExpenses,
+            salaryExpenses:
+                salaryExpenses,
+            marketingSubscriptionExpenses:
+                marketingSubscriptionExpenses,
+            totalRecurringExpenses:
+                totalRecurringExpenses,
+
+            productSpending:
+                productSpending,
+            hiringSpending:
+                hiringSpending,
+            severanceSpending:
+                severanceSpending,
+            oneTimeMarketingSpending:
+                oneTimeMarketingSpending,
+            totalOneTimeSpending:
+                totalOneTimeSpending,
+
+            monthlyProfit:
+                monthlyProfit
         )
+
+        // MARK: - Prepare for Next Month
 
         company.monthlyProductQualityChange = 0
         company.monthlyMoraleChange = 0
         company.monthlyBrandAwarenessChange = 0
+
+        company.monthlyProductSpend = 0
         company.monthlyMarketingSpend = 0
+        company.monthlyHiringSpend = 0
+        company.monthlySeveranceSpend = 0
+
+        company.lastMarketingCampaign = nil
+        company.lastMarketingGain = 0
+        company.lastMarketingWasSubscription = false
 
         return result
     }
@@ -296,16 +418,19 @@ final class GameViewModel: ObservableObject {
             return
         }
 
-        let gain = campaign.generateMonthlyGain()
+        let gain =
+            campaign.generateMonthlyGain()
 
         changeBrandAwareness(by: gain)
 
-        company.monthlyMarketingSpend +=
-            campaign.monthlyCost
+        company.lastMarketingCampaign =
+            campaign
 
-        company.lastMarketingCampaign = campaign
-        company.lastMarketingGain = gain
-        company.lastMarketingWasSubscription = true
+        company.lastMarketingGain =
+            gain
+
+        company.lastMarketingWasSubscription =
+            true
     }
 
     private func updateBrandAwarenessMaintenance() {
@@ -319,39 +444,71 @@ final class GameViewModel: ObservableObject {
     private func updateRevenue(
         contribution: Double
     ) {
+        let currentRevenue =
+            company.monthlyRevenue
+
         let qualityMultiplier =
-            Double(company.productQuality) / 100.0
+            Double(company.productQuality) /
+            100.0
 
         let employeeGrowth =
             contribution *
             1_800 *
             qualityMultiplier
 
-        let marketDrift =
-            Double.random(in: -3_000...3_000)
-
-        let teamPenalty: Double
-
-        if company.employees.isEmpty {
-            teamPenalty = company.monthlyRevenue * 0.08
-        } else {
-            teamPenalty = 0
-        }
-
-        let qualityEffect =
-            company.monthlyRevenue *
+        let productQualityEffect =
+            currentRevenue *
             (
-                Double(company.productQuality - 50) /
+                Double(
+                    company.productQuality - 50
+                ) /
                 500.0
             )
 
+        let brandAwarenessEffect =
+            currentRevenue *
+            (
+                Double(
+                    company.brandAwareness - 50
+                ) /
+                600.0
+            )
+
+        let moraleEffect: Double
+
+        if company.employees.isEmpty {
+            moraleEffect = 0
+        } else {
+            moraleEffect =
+                currentRevenue *
+                (
+                    Double(
+                        company.employeeMorale - 50
+                    ) /
+                    1_000.0
+                )
+        }
+
+        let missingTeamPenalty: Double
+
+        if company.employees.isEmpty {
+            missingTeamPenalty =
+                currentRevenue * 0.08
+        } else {
+            missingTeamPenalty = 0
+        }
+
+        let newRevenue =
+            currentRevenue +
+            employeeGrowth +
+            productQualityEffect +
+            brandAwarenessEffect +
+            moraleEffect -
+            missingTeamPenalty
+
         company.monthlyRevenue = max(
             0,
-            company.monthlyRevenue +
-            employeeGrowth +
-            qualityEffect +
-            marketDrift -
-            teamPenalty
+            newRevenue
         )
     }
 
@@ -360,15 +517,35 @@ final class GameViewModel: ObservableObject {
             return
         }
 
-        var moraleChange = Int.random(in: -2...2)
+        var moraleChange = 0
 
-        if company.monthlyProfit < 0 {
+        let monthlyProfit =
+            company.monthlyRevenue -
+            company.monthlyExpenses
+
+        if monthlyProfit < 0 {
             moraleChange -= 2
         }
 
-        if company.monthlyRevenue >
-            company.monthlyExpenses * 1.5 {
+        if monthlyProfit > 0 {
             moraleChange += 1
+        }
+
+        if company.cash < 0 {
+            moraleChange -= 1
+        }
+
+        if company.productQuality >= 70 {
+            moraleChange += 1
+        }
+
+        if company.productQuality <= 30 {
+            moraleChange -= 1
+        }
+
+        if company.employeeCount >= 6 &&
+            company.employeeMorale < 50 {
+            moraleChange -= 1
         }
 
         changeMorale(by: moraleChange)
@@ -382,40 +559,63 @@ final class GameViewModel: ObservableObject {
             company.monthlyExpenses
 
         let revenueValue =
-            company.monthlyRevenue * 6
+            company.monthlyRevenue * 8
 
-        let qualityValue =
-            Double(company.productQuality) * 2_500
+        let productValue =
+            Double(company.productQuality) *
+            3_000
+
+        let brandValue =
+            Double(company.brandAwareness) *
+            2_000
 
         let employeeValue =
-            contribution * 12_000
+            contribution * 15_000
 
-        let profitValue =
-            monthlyProfit * 4
+        let teamValue =
+            Double(company.employeeCount) *
+            10_000
 
-        let teamStabilityValue =
-            Double(company.employeeCount) * 8_000
+        let profitValue: Double
+
+        if monthlyProfit >= 0 {
+            profitValue =
+                monthlyProfit * 6
+        } else {
+            profitValue =
+                monthlyProfit * 10
+        }
+
+        let debtPenalty: Double
+
+        if company.cash < 0 {
+            debtPenalty =
+                abs(company.cash) * 0.35
+        } else {
+            debtPenalty = 0
+        }
 
         let targetValue = max(
             25_000,
             revenueValue +
-            qualityValue +
-            employeeValue +
-            profitValue +
-            teamStabilityValue
+                productValue +
+                brandValue +
+                employeeValue +
+                teamValue +
+                profitValue -
+                debtPenalty
         )
 
         let movementTowardTarget =
-            (targetValue - company.marketValue) * 0.20
-
-        let marketNoise =
-            Double.random(in: -12_000...12_000)
+            (
+                targetValue -
+                    company.marketValue
+            ) * 0.20
 
         company.marketValue = max(
             0,
             company.marketValue +
-            movementTowardTarget +
-            marketNoise
+                movementTowardTarget
         )
     }
     

@@ -20,6 +20,7 @@ struct DashboardView: View {
     @State private var showMonthSummary = false
     @State private var showGameOver = false
     @State private var showSellConfirmation = false
+    @State private var showFinance = false
 
     
     private let gridColumns = [
@@ -121,6 +122,11 @@ struct DashboardView: View {
             MarketingView(
                 gameViewModel: gameViewModel
             )
+        }
+        
+        .navigationDestination(isPresented: $showFinance) {
+            FinanceView()
+                .environmentObject(gameViewModel)
         }
         
         .sheet(isPresented: $showMonthSummary) {
@@ -352,7 +358,7 @@ struct DashboardView: View {
                     icon: "banknote.fill",
                     color: .green
                 ) {
-                    print("Finance tapped")
+                    showFinance = true
                 }
             }
         }
@@ -506,8 +512,16 @@ struct MonthSummaryView: View {
         ZStack {
             LinearGradient(
                 colors: [
-                    Color(red: 0.08, green: 0.10, blue: 0.18),
-                    Color(red: 0.12, green: 0.20, blue: 0.32)
+                    Color(
+                        red: 0.08,
+                        green: 0.10,
+                        blue: 0.18
+                    ),
+                    Color(
+                        red: 0.12,
+                        green: 0.20,
+                        blue: 0.32
+                    )
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
@@ -516,213 +530,478 @@ struct MonthSummaryView: View {
 
             ScrollView {
                 VStack(spacing: 22) {
-                    Image(systemName: "calendar.circle.fill")
-                        .font(.system(size: 54))
-                        .foregroundColor(.green)
+                    header
 
-                    Text("Month \(result.completedMonth) Complete")
-                        .font(.largeTitle.bold())
-                        .foregroundColor(.white)
-                        .multilineTextAlignment(.center)
+                    financialSummary
 
-                    Text(summaryMessage)
-                        .font(.subheadline)
-                        .foregroundColor(.white.opacity(0.65))
-                        .multilineTextAlignment(.center)
+                    recurringExpensesSection
 
-                    VStack(spacing: 12) {
-                        resultRow(
-                            title: "Revenue",
-                            value: formatCurrency(result.newRevenue),
-                            change: result.revenueChange,
-                            icon: "arrow.up.circle.fill"
-                        )
-
-                        resultRow(
-                            title: "Expenses",
-                            value: formatCurrency(result.totalExpenses),
-                            change: nil,
-                            icon: "arrow.down.circle.fill"
-                        )
-
-                        resultRow(
-                            title: "Profit",
-                            value: formatSignedCurrency(result.monthlyProfit),
-                            change: nil,
-                            icon: result.monthlyProfit >= 0
-                                ? "plus.circle.fill"
-                                : "minus.circle.fill"
-                        )
-
-                        resultRow(
-                            title: "Cash",
-                            value: formatCurrency(result.newCash),
-                            change: result.cashChange,
-                            icon: "dollarsign.circle.fill"
-                        )
-
-                        resultRow(
-                            title: "Market Value",
-                            value: formatCurrency(result.newMarketValue),
-                            change: result.marketValueChange,
-                            icon: "chart.line.uptrend.xyaxis"
-                        )
-
-                        percentageRow(
-                            title: "Product Quality",
-                            value: result.newProductQuality,
-                            change: result.productQualityChange,
-                            icon: "star.fill"
-                        )
-
-                        percentageRow(
-                            title: "Team Morale",
-                            value: result.newMorale,
-                            change: result.moraleChange,
-                            icon: "face.smiling.fill"
-                        )
+                    if result.totalOneTimeSpending > 0 {
+                        oneTimeSpendingSection
                     }
 
-                    Button {
-                        dismiss()
-                    } label: {
-                        Text("Continue to Month \(result.completedMonth + 1)")
-                            .font(.headline)
-                            .foregroundColor(.black)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .fill(Color.green)
-                            )
-                    }
+                    companyChangesSection
+
+                    continueButton
                 }
                 .padding(24)
             }
         }
     }
 
-    private var summaryMessage: String {
-        if result.monthlyProfit > 0 {
-            return "The company finished the month with a profit. Investors are cautiously impressed."
-        }
+    // MARK: - Header
 
-        if result.monthlyProfit == 0 {
-            return "The company broke even. Not glamorous, but definitely alive."
-        }
+    private var header: some View {
+        VStack(spacing: 10) {
+            Image(
+                systemName:
+                    result.netFinancialResult >= 0
+                    ? "chart.line.uptrend.xyaxis.circle.fill"
+                    : "chart.line.downtrend.xyaxis.circle.fill"
+            )
+            .font(.system(size: 54))
+            .foregroundColor(
+                result.netFinancialResult >= 0
+                ? .green
+                : .red
+            )
 
-        return "The company lost money this month. The runway is getting shorter."
+            Text(
+                "Month \(result.completedMonth) Complete"
+            )
+            .font(.largeTitle.bold())
+            .foregroundColor(.white)
+            .multilineTextAlignment(.center)
+
+            Text(summaryMessage)
+                .font(.subheadline)
+                .foregroundColor(
+                    .white.opacity(0.65)
+                )
+                .multilineTextAlignment(.center)
+        }
+    }
+
+    // MARK: - Financial Summary
+
+    private var financialSummary: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionTitle(
+                title: "Financial Result",
+                icon: "dollarsign.circle.fill"
+            )
+
+            resultRow(
+                title: "Monthly Revenue",
+                value: formatCurrency(
+                    result.newRevenue
+                ),
+                detail: formatSignedCurrency(
+                    result.revenueChange
+                ),
+                detailIsPositive:
+                    result.revenueChange >= 0
+            )
+
+            resultRow(
+                title: "Recurring Expenses",
+                value: formatCurrency(
+                    result.totalRecurringExpenses
+                )
+            )
+
+            resultRow(
+                title: "Recurring Profit",
+                value: formatSignedCurrency(
+                    result.monthlyProfit
+                ),
+                detailIsPositive:
+                    result.monthlyProfit >= 0
+            )
+
+            if result.totalOneTimeSpending > 0 {
+                resultRow(
+                    title: "One-Time Spending",
+                    value:
+                        "-\(formatCurrency(result.totalOneTimeSpending))",
+                    detailIsPositive: false
+                )
+            }
+
+            Divider()
+                .overlay(
+                    Color.white.opacity(0.15)
+                )
+
+            resultRow(
+                title: "Total Cash Change",
+                value: formatSignedCurrency(
+                    result.cashChange
+                ),
+                detailIsPositive:
+                    result.cashChange >= 0,
+                isHighlighted: true
+            )
+
+            resultRow(
+                title: "Current Cash",
+                value: formatCurrency(
+                    result.newCash
+                ),
+                isHighlighted: true
+            )
+        }
+        .financeCard()
+    }
+
+    // MARK: - Recurring Expenses
+
+    private var recurringExpensesSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionTitle(
+                title: "Recurring Expenses",
+                icon: "repeat.circle.fill"
+            )
+
+            resultRow(
+                title: "Operating Costs",
+                value:
+                    "-\(formatCurrency(result.operatingExpenses))"
+            )
+
+            resultRow(
+                title: "Employee Salaries",
+                value:
+                    "-\(formatCurrency(result.salaryExpenses))"
+            )
+
+            resultRow(
+                title: "Marketing Subscription",
+                value:
+                    "-\(formatCurrency(result.marketingSubscriptionExpenses))"
+            )
+
+            Divider()
+                .overlay(
+                    Color.white.opacity(0.15)
+                )
+
+            resultRow(
+                title: "Total Each Month",
+                value:
+                    "-\(formatCurrency(result.totalRecurringExpenses))",
+                isHighlighted: true
+            )
+        }
+        .financeCard()
+    }
+
+    // MARK: - One-Time Spending
+
+    private var oneTimeSpendingSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionTitle(
+                title: "One-Time Spending",
+                icon: "cart.fill"
+            )
+
+            if result.productSpending > 0 {
+                resultRow(
+                    title: "Product Development",
+                    value:
+                        "-\(formatCurrency(result.productSpending))"
+                )
+            }
+
+            if result.hiringSpending > 0 {
+                resultRow(
+                    title: "Hiring Costs",
+                    value:
+                        "-\(formatCurrency(result.hiringSpending))"
+                )
+            }
+
+            if result.severanceSpending > 0 {
+                resultRow(
+                    title: "Severance Costs",
+                    value:
+                        "-\(formatCurrency(result.severanceSpending))"
+                )
+            }
+
+            if result.oneTimeMarketingSpending > 0 {
+                resultRow(
+                    title: "Marketing Campaigns",
+                    value:
+                        "-\(formatCurrency(result.oneTimeMarketingSpending))"
+                )
+            }
+
+            Divider()
+                .overlay(
+                    Color.white.opacity(0.15)
+                )
+
+            resultRow(
+                title: "Total One-Time Spending",
+                value:
+                    "-\(formatCurrency(result.totalOneTimeSpending))",
+                isHighlighted: true
+            )
+        }
+        .financeCard()
+    }
+
+    // MARK: - Company Changes
+
+    private var companyChangesSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionTitle(
+                title: "Company Changes",
+                icon: "building.2.fill"
+            )
+
+            percentageRow(
+                title: "Product Quality",
+                value: result.newProductQuality,
+                change:
+                    result.productQualityChange
+            )
+
+            percentageRow(
+                title: "Team Morale",
+                value: result.newMorale,
+                change:
+                    result.moraleChange
+            )
+
+            percentageRow(
+                title: "Brand Awareness",
+                value:
+                    result.newBrandAwareness,
+                change:
+                    result.brandAwarenessChange
+            )
+
+            resultRow(
+                title: "Market Value",
+                value: formatCurrency(
+                    result.newMarketValue
+                ),
+                detail: formatSignedCurrency(
+                    result.marketValueChange
+                ),
+                detailIsPositive:
+                    result.marketValueChange >= 0
+            )
+        }
+        .financeCard()
+    }
+
+    // MARK: - Continue
+
+    private var continueButton: some View {
+        Button {
+            dismiss()
+        } label: {
+            Text(
+                "Continue to Month \(result.completedMonth + 1)"
+            )
+            .font(.headline)
+            .foregroundColor(.black)
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(
+                RoundedRectangle(
+                    cornerRadius: 16
+                )
+                .fill(Color.green)
+            )
+        }
+    }
+
+    // MARK: - Reusable Views
+
+    private func sectionTitle(
+        title: String,
+        icon: String
+    ) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: icon)
+                .foregroundColor(.green)
+
+            Text(title)
+                .font(.headline)
+                .foregroundColor(.white)
+        }
     }
 
     private func resultRow(
         title: String,
         value: String,
-        change: Double?,
-        icon: String
+        detail: String? = nil,
+        detailIsPositive: Bool = true,
+        isHighlighted: Bool = false
     ) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .foregroundColor(.green)
-                .frame(width: 28)
-
-            VStack(alignment: .leading, spacing: 3) {
-                Text(title)
-                    .font(.caption)
-                    .foregroundColor(.white.opacity(0.6))
-
-                Text(value)
-                    .font(.headline)
-                    .foregroundColor(.white)
-            }
+        HStack {
+            Text(title)
+                .font(
+                    isHighlighted
+                    ? .subheadline.bold()
+                    : .subheadline
+                )
+                .foregroundColor(
+                    isHighlighted
+                    ? .white
+                    : .white.opacity(0.7)
+                )
 
             Spacer()
 
-            if let change {
-                Text(formatSignedCurrency(change))
-                    .font(.subheadline.bold())
+            if let detail {
+                Text(detail)
+                    .font(.caption.bold())
                     .foregroundColor(
-                        change >= 0 ? .green : .red
+                        detailIsPositive
+                        ? .green
+                        : .red
                     )
             }
+
+            Text(value)
+                .font(
+                    isHighlighted
+                    ? .headline
+                    : .subheadline.bold()
+                )
+                .foregroundColor(
+                    value.hasPrefix("-")
+                    ? .red
+                    : .white
+                )
         }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(Color.white.opacity(0.09))
-        )
     }
 
     private func percentageRow(
         title: String,
         value: Int,
-        change: Int,
-        icon: String
+        change: Int
     ) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .foregroundColor(.green)
-                .frame(width: 28)
-
-            VStack(alignment: .leading, spacing: 3) {
-                Text(title)
-                    .font(.caption)
-                    .foregroundColor(.white.opacity(0.6))
-
-                Text("\(value)%")
-                    .font(.headline)
-                    .foregroundColor(.white)
-            }
+        HStack {
+            Text(title)
+                .font(.subheadline)
+                .foregroundColor(
+                    .white.opacity(0.7)
+                )
 
             Spacer()
 
-            Text("\(change >= 0 ? "+" : "")\(change)%")
+            Text(
+                "\(change >= 0 ? "+" : "")\(change)%"
+            )
+            .font(.caption.bold())
+            .foregroundColor(
+                change >= 0
+                ? .green
+                : .red
+            )
+
+            Text("\(value)%")
                 .font(.subheadline.bold())
-                .foregroundColor(
-                    change >= 0 ? .green : .red
-                )
+                .foregroundColor(.white)
+                .frame(width: 45, alignment: .trailing)
         }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(Color.white.opacity(0.09))
-        )
     }
 
-    private func formatCurrency(_ amount: Double) -> String {
+    // MARK: - Messages
+
+    private var summaryMessage: String {
+        if result.netFinancialResult > 0 {
+            return """
+            The company ended the month with positive cash flow. The financial spreadsheet is smiling.
+            """
+        }
+
+        if result.netFinancialResult == 0 {
+            return """
+            The company broke even after all spending. Suspiciously balanced.
+            """
+        }
+
+        if result.monthlyProfit >= 0 &&
+            result.netFinancialResult < 0 {
+            return """
+            Regular operations were profitable, but one-time investments reduced cash this month.
+            """
+        }
+
+        return """
+        The company spent more than it earned. Review revenue, salaries, marketing, and operating costs.
+        """
+    }
+
+    // MARK: - Formatting
+
+    private func formatCurrency(
+        _ amount: Double
+    ) -> String {
         let absoluteAmount = abs(amount)
 
-        if absoluteAmount >= 1_000_000_000 {
+        if absoluteAmount >=
+            1_000_000_000 {
             return String(
                 format: "$%.1fB",
-                amount / 1_000_000_000
+                absoluteAmount /
+                    1_000_000_000
             )
         }
 
-        if absoluteAmount >= 1_000_000 {
+        if absoluteAmount >=
+            1_000_000 {
             return String(
                 format: "$%.1fM",
-                amount / 1_000_000
+                absoluteAmount /
+                    1_000_000
             )
         }
 
         if absoluteAmount >= 1_000 {
             return String(
                 format: "$%.0fK",
-                amount / 1_000
+                absoluteAmount / 1_000
             )
         }
 
-        return "$\(Int(amount))"
+        return "$\(Int(absoluteAmount))"
     }
 
     private func formatSignedCurrency(
         _ amount: Double
     ) -> String {
-        let sign = amount >= 0 ? "+" : "-"
+        let sign =
+            amount >= 0 ? "+" : "-"
 
-        return sign + formatCurrency(abs(amount))
+        return sign +
+            formatCurrency(abs(amount))
     }
 }
+
+private extension View {
+    func financeCard() -> some View {
+        self
+            .padding()
+            .background(
+                RoundedRectangle(
+                    cornerRadius: 18
+                )
+                .fill(
+                    Color.white.opacity(0.09)
+                )
+            )
+    }
+}
+
+
 
 
 struct DashboardView_Previews: PreviewProvider {

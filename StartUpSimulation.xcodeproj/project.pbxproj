@@ -10,6 +10,8 @@
 		B23CB4E4300A1F3A00A336E9 /* ProductView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B23CB4E3300A1F3A00A336E9 /* ProductView.swift */; };
 		B23CB4E7300A2EC300A336E9 /* MarketingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B23CB4E6300A2EC200A336E9 /* MarketingView.swift */; };
 		B23CB4E9300A2EEC00A336E9 /* MarketingCampaign.swift in Sources */ = {isa = PBXBuildFile; fileRef = B23CB4E8300A2EEC00A336E9 /* MarketingCampaign.swift */; };
+		B27ACD9D300B9AC000AE1F79 /* financeSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27ACD9C300B9AC000AE1F79 /* financeSnapshot.swift */; };
+		B27ACDA1300BA08700AE1F79 /* FinanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27ACDA0300BA08700AE1F79 /* FinanceView.swift */; };
 		B27B58413007EAFD001A72FD /* MarketValuePoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27B58403007EAFD001A72FD /* MarketValuePoint.swift */; };
 		B27B58433007F5E0001A72FD /* GameOutcome.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27B58423007F5E0001A72FD /* GameOutcome.swift */; };
 		B27B58453007F900001A72FD /* GameOverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B27B58443007F900001A72FD /* GameOverView.swift */; };
@@ -36,6 +38,8 @@
 		B23CB4E3300A1F3A00A336E9 /* ProductView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductView.swift; sourceTree = "<group>"; };
 		B23CB4E6300A2EC200A336E9 /* MarketingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingView.swift; sourceTree = "<group>"; };
 		B23CB4E8300A2EEC00A336E9 /* MarketingCampaign.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingCampaign.swift; sourceTree = "<group>"; };
+		B27ACD9C300B9AC000AE1F79 /* financeSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = financeSnapshot.swift; sourceTree = "<group>"; };
+		B27ACDA0300BA08700AE1F79 /* FinanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinanceView.swift; sourceTree = "<group>"; };
 		B27B58403007EAFD001A72FD /* MarketValuePoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketValuePoint.swift; sourceTree = "<group>"; };
 		B27B58423007F5E0001A72FD /* GameOutcome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOutcome.swift; sourceTree = "<group>"; };
 		B27B58443007F900001A72FD /* GameOverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverView.swift; sourceTree = "<group>"; };
@@ -140,6 +144,7 @@
 				B27B58423007F5E0001A72FD /* GameOutcome.swift */,
 				B23CB4E8300A2EEC00A336E9 /* MarketingCampaign.swift */,
 				B298A1A8300A73C700157856 /* PlayerProfile.swift */,
+				B27ACD9C300B9AC000AE1F79 /* financeSnapshot.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -225,6 +230,7 @@
 		B2952C7C3007A48800AEEB5C /* Finance */ = {
 			isa = PBXGroup;
 			children = (
+				B27ACDA0300BA08700AE1F79 /* FinanceView.swift */,
 			);
 			path = Finance;
 			sourceTree = "<group>";
@@ -306,12 +312,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B27ACDA1300BA08700AE1F79 /* FinanceView.swift in Sources */,
 				B2E014C93007B87A001EA90E /* CompanyStage.swift in Sources */,
 				B2D7873D3007A9D2008F0050 /* GameViewModel.swift in Sources */,
 				B27B58433007F5E0001A72FD /* GameOutcome.swift in Sources */,
 				B28B59C730079B38001BB817 /* MainMenuView.swift in Sources */,
 				B298A1A9300A73C700157856 /* PlayerProfile.swift in Sources */,
 				B2CF76FF3007BF0600EE47A2 /* Employee.swift in Sources */,
+				B27ACD9D300B9AC000AE1F79 /* financeSnapshot.swift in Sources */,
 				B23CB4E7300A2EC300A336E9 /* MarketingView.swift in Sources */,
 				B27B58453007F900001A72FD /* GameOverView.swift in Sources */,
 				B2CF77013007BF3500EE47A2 /* CandidateFactory.swift in Sources */,

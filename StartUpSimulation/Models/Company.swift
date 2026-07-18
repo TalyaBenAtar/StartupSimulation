@@ -11,11 +11,21 @@ struct Company {
     var name: String
     var industry: Industry
 
+    // MARK: - Main Financial Values
+
     var cash: Double
     var marketValue: Double
-
     var monthlyRevenue: Double
     var baseMonthlyExpenses: Double
+
+    // MARK: - Current Month One-Time Spending
+
+    var monthlyProductSpend: Double
+    var monthlyMarketingSpend: Double
+    var monthlyHiringSpend: Double
+    var monthlySeveranceSpend: Double
+
+    // MARK: - Company Stats
 
     var employeeMorale: Int
 
@@ -27,46 +37,80 @@ struct Company {
     var brandAwareness: Int
     var activeMonthlyMarketingCampaign: MarketingCampaign?
 
+    // MARK: - Monthly Stat Changes
+
     var monthlyProductQualityChange: Int
     var monthlyMoraleChange: Int
     var monthlyBrandAwarenessChange: Int
-    var monthlyMarketingSpend: Double
+
+    // MARK: - Last Marketing Result
 
     var lastMarketingCampaign: MarketingCampaign?
     var lastMarketingGain: Int
     var lastMarketingWasSubscription: Bool
 
+    // MARK: - Progress
+
     var month: Int
     var employees: [Employee]
     var marketValueHistory: [MarketValuePoint]
+
+    // MARK: - Employees
 
     var employeeCount: Int {
         employees.count
     }
 
     var salaryExpenses: Double {
-        employees.reduce(0) { total, employee in
+        employees.reduce(0) {
+            total,
+            employee in
+
             total + employee.monthlySalary
         }
     }
 
+    // MARK: - Marketing
+
     var marketingSubscriptionExpenses: Double {
-        activeMonthlyMarketingCampaign?.monthlyCost ?? 0
+        activeMonthlyMarketingCampaign?
+            .monthlyCost ?? 0
     }
+
+    // MARK: - Expenses
 
     var monthlyExpenses: Double {
         baseMonthlyExpenses +
-        salaryExpenses +
-        marketingSubscriptionExpenses
+            salaryExpenses +
+            marketingSubscriptionExpenses
+    }
+
+    var totalOneTimeSpendingThisMonth: Double {
+        monthlyProductSpend +
+            monthlyMarketingSpend +
+            monthlyHiringSpend +
+            monthlySeveranceSpend
     }
 
     var monthlyProfit: Double {
-        monthlyRevenue - monthlyExpenses
+        monthlyRevenue -
+            monthlyExpenses
     }
 
-    var stage: CompanyStage {
-        CompanyStage.stage(for: marketValue)
+    var cashChangeThisMonth: Double {
+        monthlyProfit -
+            totalOneTimeSpendingThisMonth
     }
+
+    // MARK: - Stage
+
+    var stage: CompanyStage {
+        CompanyStage.stage(
+            for: marketValue
+        )
+    }
+
+    // MARK: - New Company
 
     static func newCompany(
         name: String,
@@ -79,6 +123,10 @@ struct Company {
             marketValue: 200_000,
             monthlyRevenue: 5_000,
             baseMonthlyExpenses: 8_000,
+            monthlyProductSpend: 0,
+            monthlyMarketingSpend: 0,
+            monthlyHiringSpend: 0,
+            monthlySeveranceSpend: 0,
             employeeMorale: 80,
             productQuality: 20,
             majorVersion: 1,
@@ -89,7 +137,6 @@ struct Company {
             monthlyProductQualityChange: 0,
             monthlyMoraleChange: 0,
             monthlyBrandAwarenessChange: 0,
-            monthlyMarketingSpend: 0,
             lastMarketingCampaign: nil,
             lastMarketingGain: 0,
             lastMarketingWasSubscription: false,
@@ -104,6 +151,8 @@ struct Company {
         )
     }
 
+    // MARK: - Empty Company
+
     static var empty: Company {
         Company(
             name: "",
@@ -112,6 +161,10 @@ struct Company {
             marketValue: 0,
             monthlyRevenue: 0,
             baseMonthlyExpenses: 0,
+            monthlyProductSpend: 0,
+            monthlyMarketingSpend: 0,
+            monthlyHiringSpend: 0,
+            monthlySeveranceSpend: 0,
             employeeMorale: 0,
             productQuality: 0,
             majorVersion: 0,
@@ -122,7 +175,6 @@ struct Company {
             monthlyProductQualityChange: 0,
             monthlyMoraleChange: 0,
             monthlyBrandAwarenessChange: 0,
-            monthlyMarketingSpend: 0,
             lastMarketingCampaign: nil,
             lastMarketingGain: 0,
             lastMarketingWasSubscription: false,
