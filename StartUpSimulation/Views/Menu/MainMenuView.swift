@@ -24,6 +24,9 @@ struct MainMenuView: View {
     @State private var showFounderProfile =
         false
 
+    @State private var showHowToPlay =
+        false
+
     @State private var showExistingStartupWarning =
         false
 
@@ -99,6 +102,15 @@ struct MainMenuView: View {
                     .environmentObject(
                         gameViewModel
                     )
+            }
+
+            // MARK: - How to Play Navigation
+
+            .navigationDestination(
+                isPresented:
+                    $showHowToPlay
+            ) {
+                HowToPlayView()
             }
 
             // MARK: - Existing Startup Warning
@@ -412,9 +424,8 @@ struct MainMenuView: View {
             )
 
             Button {
-                print(
-                    "How to Play tapped"
-                )
+                showHowToPlay =
+                    true
             } label: {
                 MenuButtonContent(
                     title: "How to Play",
