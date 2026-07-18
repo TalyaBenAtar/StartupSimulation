@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct PlayerProfile {
+struct PlayerProfile: Codable {
     var name: String
     var founderWealth: Double
 

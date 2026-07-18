@@ -26,6 +26,8 @@
 		B2CF76FF3007BF0600EE47A2 /* Employee.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2CF76FE3007BF0600EE47A2 /* Employee.swift */; };
 		B2CF77013007BF3500EE47A2 /* CandidateFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2CF77003007BF3400EE47A2 /* CandidateFactory.swift */; };
 		B2CF77033007BFB300EE47A2 /* EmployeesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2CF77023007BFB300EE47A2 /* EmployeesView.swift */; };
+		B2D54F38300BBA9900C3C1B8 /* GameSaveData.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D54F37300BBA9900C3C1B8 /* GameSaveData.swift */; };
+		B2D54F3A300BBAAE00C3C1B8 /* GameSaveManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D54F39300BBAAE00C3C1B8 /* GameSaveManager.swift */; };
 		B2D787373007A83B008F0050 /* StartupCreationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D787363007A83B008F0050 /* StartupCreationView.swift */; };
 		B2D787393007A92C008F0050 /* Industry.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D787383007A92C008F0050 /* Industry.swift */; };
 		B2D7873D3007A9D2008F0050 /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D7873C3007A9D2008F0050 /* GameViewModel.swift */; };
@@ -55,6 +57,8 @@
 		B2CF76FE3007BF0600EE47A2 /* Employee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Employee.swift; sourceTree = "<group>"; };
 		B2CF77003007BF3400EE47A2 /* CandidateFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CandidateFactory.swift; sourceTree = "<group>"; };
 		B2CF77023007BFB300EE47A2 /* EmployeesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeesView.swift; sourceTree = "<group>"; };
+		B2D54F37300BBA9900C3C1B8 /* GameSaveData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSaveData.swift; sourceTree = "<group>"; };
+		B2D54F39300BBAAE00C3C1B8 /* GameSaveManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSaveManager.swift; sourceTree = "<group>"; };
 		B2D787363007A83B008F0050 /* StartupCreationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartupCreationView.swift; sourceTree = "<group>"; };
 		B2D787383007A92C008F0050 /* Industry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Industry.swift; sourceTree = "<group>"; };
 		B2D7873C3007A9D2008F0050 /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
@@ -109,6 +113,7 @@
 		B28B59C330079B38001BB817 /* StartUpSimulation */ = {
 			isa = PBXGroup;
 			children = (
+				B2D54F36300BBA6500C3C1B8 /* Persistence */,
 				B2952C773007A3FF00AEEB5C /* Resources */,
 				B2952C763007A3EF00AEEB5C /* Utilities */,
 				B2952C753007A3E000AEEB5C /* Managers */,
@@ -242,6 +247,15 @@
 			path = Events;
 			sourceTree = "<group>";
 		};
+		B2D54F36300BBA6500C3C1B8 /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				B2D54F37300BBA9900C3C1B8 /* GameSaveData.swift */,
+				B2D54F39300BBAAE00C3C1B8 /* GameSaveManager.swift */,
+			);
+			path = Persistence;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -312,6 +326,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B2D54F38300BBA9900C3C1B8 /* GameSaveData.swift in Sources */,
 				B27ACDA1300BA08700AE1F79 /* FinanceView.swift in Sources */,
 				B2E014C93007B87A001EA90E /* CompanyStage.swift in Sources */,
 				B2D7873D3007A9D2008F0050 /* GameViewModel.swift in Sources */,
@@ -330,6 +345,7 @@
 				B2CF77033007BFB300EE47A2 /* EmployeesView.swift in Sources */,
 				B27CD76C3007DDA50083F6E0 /* EmployeeRole.swift in Sources */,
 				B2D787393007A92C008F0050 /* Industry.swift in Sources */,
+				B2D54F3A300BBAAE00C3C1B8 /* GameSaveManager.swift in Sources */,
 				B27B58413007EAFD001A72FD /* MarketValuePoint.swift in Sources */,
 				B23CB4E9300A2EEC00A336E9 /* MarketingCampaign.swift in Sources */,
 				B2E014C53007B0CF001EA90E /* Company.swift in Sources */,

@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum MarketingCampaign: String, CaseIterable, Identifiable {
+enum MarketingCampaign: String, CaseIterable, Identifiable, Codable {
     case socialMedia
     case paidAdvertising
     case marketingAgency

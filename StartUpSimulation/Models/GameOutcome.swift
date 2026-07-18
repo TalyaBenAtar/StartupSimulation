@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum GameOutcome {
+enum GameOutcome: Codable, Equatable {
     case active
     case bankrupt
     case unicorn
