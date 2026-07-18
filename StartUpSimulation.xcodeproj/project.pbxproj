@@ -21,6 +21,7 @@
 		B28B59C730079B38001BB817 /* MainMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28B59C630079B38001BB817 /* MainMenuView.swift */; };
 		B28B59C930079B46001BB817 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B28B59C830079B46001BB817 /* Assets.xcassets */; };
 		B28B59CC30079B46001BB817 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B28B59CB30079B46001BB817 /* Preview Assets.xcassets */; };
+		B28BDB7F300BD1FB005CFDFF /* FounderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28BDB7E300BD1FB005CFDFF /* FounderView.swift */; };
 		B298A1A9300A73C700157856 /* PlayerProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B298A1A8300A73C700157856 /* PlayerProfile.swift */; };
 		B2CF76FD3007BEC100EE47A2 /* EmployeeSeniority.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2CF76FC3007BEC100EE47A2 /* EmployeeSeniority.swift */; };
 		B2CF76FF3007BF0600EE47A2 /* Employee.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2CF76FE3007BF0600EE47A2 /* Employee.swift */; };
@@ -52,6 +53,7 @@
 		B28B59C630079B38001BB817 /* MainMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuView.swift; sourceTree = "<group>"; };
 		B28B59C830079B46001BB817 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B28B59CB30079B46001BB817 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		B28BDB7E300BD1FB005CFDFF /* FounderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FounderView.swift; sourceTree = "<group>"; };
 		B298A1A8300A73C700157856 /* PlayerProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerProfile.swift; sourceTree = "<group>"; };
 		B2CF76FC3007BEC100EE47A2 /* EmployeeSeniority.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeSeniority.swift; sourceTree = "<group>"; };
 		B2CF76FE3007BF0600EE47A2 /* Employee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Employee.swift; sourceTree = "<group>"; };
@@ -135,6 +137,14 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		B28BDB7D300BD1BD005CFDFF /* Founder */ = {
+			isa = PBXGroup;
+			children = (
+				B28BDB7E300BD1FB005CFDFF /* FounderView.swift */,
+			);
+			path = Founder;
+			sourceTree = "<group>";
+		};
 		B2952C723007A39900AEEB5C /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -157,6 +167,7 @@
 		B2952C733007A3B900AEEB5C /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B28BDB7D300BD1BD005CFDFF /* Founder */,
 				B23CB4E5300A2EA100A336E9 /* Marketing */,
 				B23CB4E2300A1EF900A336E9 /* Product */,
 				B2952C7D3007A49700AEEB5C /* Events */,
@@ -338,6 +349,7 @@
 				B23CB4E7300A2EC300A336E9 /* MarketingView.swift in Sources */,
 				B27B58453007F900001A72FD /* GameOverView.swift in Sources */,
 				B2CF77013007BF3500EE47A2 /* CandidateFactory.swift in Sources */,
+				B28BDB7F300BD1FB005CFDFF /* FounderView.swift in Sources */,
 				B2D787373007A83B008F0050 /* StartupCreationView.swift in Sources */,
 				B2E014C73007B520001EA90E /* DashboardView.swift in Sources */,
 				B28B59C530079B38001BB817 /* StartUpSimulationApp.swift in Sources */,

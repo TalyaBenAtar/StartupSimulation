@@ -107,6 +107,19 @@ struct DashboardView: View {
         }
         
         .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    onReturnToMainMenu()
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "chevron.left")
+                        Text("Menu")
+                    }
+                    .foregroundColor(.white)
+                }
+            }
+        }
         
         .navigationDestination(isPresented: $showEmployees) {
                     EmployeesView()

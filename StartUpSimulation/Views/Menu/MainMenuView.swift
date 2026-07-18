@@ -21,6 +21,9 @@ struct MainMenuView: View {
     @State private var showDashboard =
         false
 
+    @State private var showFounderProfile =
+        false
+
     @State private var showExistingStartupWarning =
         false
 
@@ -86,6 +89,18 @@ struct MainMenuView: View {
                 )
             }
 
+            // MARK: - Founder Navigation
+
+            .navigationDestination(
+                isPresented:
+                    $showFounderProfile
+            ) {
+                FounderView()
+                    .environmentObject(
+                        gameViewModel
+                    )
+            }
+
             // MARK: - Existing Startup Warning
 
             .confirmationDialog(
@@ -98,8 +113,6 @@ struct MainMenuView: View {
                 Button(
                     "Keep \(gameViewModel.company.name)"
                 ) {
-                    // Stay on the main menu.
-                    // The player can press Continue separately.
                 }
 
                 Button(
@@ -240,16 +253,33 @@ struct MainMenuView: View {
                     )
                     .font(.subheadline)
                     .foregroundColor(.green)
+
+                    if founderProfileExists {
+                        Text(
+                            "View career statistics"
+                        )
+                        .font(.caption)
+                        .foregroundColor(
+                            .white.opacity(0.55)
+                        )
+                    }
                 }
 
                 Spacer()
+
+                if founderProfileExists {
+                    Image(
+                        systemName:
+                            "chevron.right"
+                    )
+                    .font(.caption.bold())
+                    .foregroundColor(
+                        .white.opacity(0.45)
+                    )
+                }
             }
 
-            if gameViewModel
-                .playerProfile
-                .name
-                .isEmpty {
-
+            if !founderProfileExists {
                 founderCreationControls
             }
         }
@@ -271,14 +301,24 @@ struct MainMenuView: View {
                 lineWidth: 1
             )
         )
+        .contentShape(
+            RoundedRectangle(
+                cornerRadius: 18
+            )
+        )
+        .onTapGesture {
+            guard founderProfileExists
+            else {
+                return
+            }
+
+            showFounderProfile =
+                true
+        }
     }
 
     private var founderDisplayName: String {
-        if gameViewModel
-            .playerProfile
-            .name
-            .isEmpty {
-
+        if !founderProfileExists {
             return "Create Founder Profile"
         }
 
@@ -331,9 +371,6 @@ struct MainMenuView: View {
 
     private var menuButtons: some View {
         VStack(spacing: 16) {
-
-            // MARK: New Game
-
             Button {
                 handleNewGameTapped()
             } label: {
@@ -351,8 +388,6 @@ struct MainMenuView: View {
                 ? 1
                 : 0.5
             )
-
-            // MARK: Continue
 
             Button {
                 showDashboard =
@@ -375,8 +410,6 @@ struct MainMenuView: View {
                 ? 1
                 : 0.5
             )
-
-            // MARK: How to Play
 
             Button {
                 print(
