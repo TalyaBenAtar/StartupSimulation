@@ -10,34 +10,27 @@ import SwiftUI
 struct GameOverView: View {
     @EnvironmentObject private var gameViewModel: GameViewModel
 
+    @State private var animateCelebration = false
+
     let onReturnToMainMenu: () -> Void
 
     var body: some View {
         ZStack {
             LinearGradient(
-                colors: [
-                    Color(
-                        red: 0.08,
-                        green: 0.10,
-                        blue: 0.18
-                    ),
-                    Color(
-                        red: 0.12,
-                        green: 0.20,
-                        blue: 0.32
-                    )
-                ],
+                colors: backgroundColors,
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
             .ignoresSafeArea()
 
+            if gameViewModel.gameOutcome == .unicorn {
+                confettiLayer
+            }
+
             VStack(spacing: 24) {
                 Spacer()
 
-                Image(systemName: outcomeIcon)
-                    .font(.system(size: 78))
-                    .foregroundColor(outcomeColor)
+                outcomeImage
 
                 Text(outcomeTitle)
                     .font(
@@ -52,11 +45,16 @@ struct GameOverView: View {
                 Text(outcomeMessage)
                     .font(.headline)
                     .foregroundColor(
-                        .white.opacity(0.7)
+                        .white.opacity(0.75)
                     )
                     .multilineTextAlignment(.center)
 
                 VStack(spacing: 10) {
+                    resultRow(
+                        title: "Startup",
+                        value: gameViewModel.company.name
+                    )
+
                     resultRow(
                         title: "Final Month",
                         value:
@@ -90,7 +88,16 @@ struct GameOverView: View {
                         cornerRadius: 18
                     )
                     .fill(
-                        Color.white.opacity(0.09)
+                        Color.white.opacity(0.10)
+                    )
+                )
+                .overlay(
+                    RoundedRectangle(
+                        cornerRadius: 18
+                    )
+                    .stroke(
+                        outcomeColor.opacity(0.35),
+                        lineWidth: 1
                     )
                 )
 
@@ -107,7 +114,7 @@ struct GameOverView: View {
                         Text("Return to Main Menu")
                             .font(.headline)
                     }
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(
@@ -121,6 +128,170 @@ struct GameOverView: View {
             .padding(24)
         }
         .interactiveDismissDisabled()
+        .onAppear {
+            animateCelebration = true
+        }
+    }
+
+    @ViewBuilder
+    private var outcomeImage: some View {
+        if gameViewModel.gameOutcome == .unicorn {
+            ZStack {
+                Circle()
+                    .fill(
+                        Color.white.opacity(0.12)
+                    )
+                    .frame(
+                        width: 135,
+                        height: 135
+                    )
+
+                Circle()
+                    .stroke(
+                        Color.white.opacity(0.25),
+                        lineWidth: 3
+                    )
+                    .frame(
+                        width: 135,
+                        height: 135
+                    )
+                    .scaleEffect(
+                        animateCelebration
+                            ? 1.18
+                            : 0.90
+                    )
+                    .opacity(
+                        animateCelebration
+                            ? 0
+                            : 1
+                    )
+                    .animation(
+                        .easeOut(duration: 1.4)
+                            .repeatForever(
+                                autoreverses: false
+                            ),
+                        value: animateCelebration
+                    )
+
+                Text("🦄")
+                    .font(.system(size: 78))
+                    .rotationEffect(
+                        .degrees(
+                            animateCelebration
+                                ? 5
+                                : -5
+                        )
+                    )
+                    .scaleEffect(
+                        animateCelebration
+                            ? 1.07
+                            : 0.95
+                    )
+                    .animation(
+                        .easeInOut(duration: 0.8)
+                            .repeatForever(
+                                autoreverses: true
+                            ),
+                        value: animateCelebration
+                    )
+            }
+        } else {
+            Image(systemName: outcomeIcon)
+                .font(.system(size: 78))
+                .foregroundColor(outcomeColor)
+        }
+    }
+
+    private var confettiLayer: some View {
+        GeometryReader { geometry in
+            ZStack {
+                ForEach(0..<24, id: \.self) { index in
+                    confettiItem(
+                        index: index,
+                        size: geometry.size
+                    )
+                }
+            }
+        }
+        .allowsHitTesting(false)
+        .clipped()
+    }
+
+    private func confettiItem(
+        index: Int,
+        size: CGSize
+    ) -> some View {
+        let symbol =
+            confettiSymbols[
+                index % confettiSymbols.count
+            ]
+
+        let fontSize =
+            CGFloat(14 + index % 10)
+
+        let xPosition =
+            confettiXPosition(
+                index: index,
+                width: size.width
+            )
+
+        let yPosition =
+            animateCelebration
+                ? size.height + 40
+                : -40
+
+        let rotation =
+            animateCelebration
+                ? Double(index * 90)
+                : 0
+
+        let duration =
+            Double(4 + index % 4)
+
+        let delay =
+            Double(index) * 0.15
+
+        return Text(symbol)
+            .font(
+                .system(size: fontSize)
+            )
+            .position(
+                x: xPosition,
+                y: yPosition
+            )
+            .rotationEffect(
+                .degrees(rotation)
+            )
+            .animation(
+                .linear(duration: duration)
+                    .repeatForever(
+                        autoreverses: false
+                    )
+                    .delay(delay),
+                value: animateCelebration
+            )
+    }
+
+    private var confettiSymbols: [String] {
+        [
+            "✨",
+            "🎉",
+            "⭐️",
+            "💜",
+            "💎",
+            "🚀"
+        ]
+    }
+
+    private func confettiXPosition(
+        index: Int,
+        width: CGFloat
+    ) -> CGFloat {
+        let spacing =
+            width / 8
+
+        return spacing *
+            CGFloat((index % 8) + 1)
     }
 
     private var outcomeTitle: String {
@@ -132,7 +303,7 @@ struct GameOverView: View {
             return "Startup Bankrupt"
 
         case .unicorn:
-            return "Unicorn Achieved"
+            return "You Built a Unicorn!"
 
         case .sold:
             return "Startup Acquired!"
@@ -151,7 +322,7 @@ struct GameOverView: View {
 
         case .unicorn:
             return """
-            Your startup reached a valuation of one billion dollars. Investors may now use the word “disruptive” without irony.
+            Congratulations! Your startup reached a valuation of one billion dollars and officially joined the unicorn club. Investors may now use the word “disruptive” without irony.
             """
 
         case .sold:
@@ -188,10 +359,47 @@ struct GameOverView: View {
             return .red
 
         case .unicorn:
-            return .green
+            return .purple
 
         case .sold:
             return .green
+        }
+    }
+
+    private var backgroundColors: [Color] {
+        switch gameViewModel.gameOutcome {
+        case .unicorn:
+            return [
+                Color(
+                    red: 0.18,
+                    green: 0.06,
+                    blue: 0.30
+                ),
+                Color(
+                    red: 0.43,
+                    green: 0.12,
+                    blue: 0.48
+                ),
+                Color(
+                    red: 0.10,
+                    green: 0.20,
+                    blue: 0.42
+                )
+            ]
+
+        default:
+            return [
+                Color(
+                    red: 0.08,
+                    green: 0.10,
+                    blue: 0.18
+                ),
+                Color(
+                    red: 0.12,
+                    green: 0.20,
+                    blue: 0.32
+                )
+            ]
         }
     }
 
@@ -217,6 +425,7 @@ struct GameOverView: View {
             Text(value)
                 .fontWeight(.bold)
                 .foregroundColor(.white)
+                .multilineTextAlignment(.trailing)
         }
     }
 
@@ -256,22 +465,24 @@ struct GameOverView: View {
 
 struct GameOverView_Previews:
     PreviewProvider {
-
-    static var previews: some View {
-        let game = GameViewModel(
-            company: Company.newCompany(
-                name: "Mowers",
-                industry:
-                    .artificialIntelligence
+        static var previews: some View {
+            let game = GameViewModel(
+                company: Company.newCompany(
+                    name: "Mowers",
+                    industry:
+                        .artificialIntelligence
+                )
             )
-        )
 
-        game.lastStartupSaleValue = game.company.marketValue
-        game.gameOutcome = .sold
+            game.company.marketValue =
+                1_000_000_000
 
-        return GameOverView(
-            onReturnToMainMenu: {}
-        )
-        .environmentObject(game)
+            game.gameOutcome = .unicorn
+
+            return GameOverView(
+                onReturnToMainMenu: {}
+            )
+            .environmentObject(game)
+        }
     }
-}
+

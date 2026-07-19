@@ -120,6 +120,11 @@ struct DashboardView: View {
                 }
             }
         }
+        .onAppear {
+            if gameViewModel.gameOutcome != .active {
+                showGameOver = true
+            }
+        }
         
         .navigationDestination(isPresented: $showEmployees) {
                     EmployeesView()

@@ -130,6 +130,11 @@ final class GameViewModel: ObservableObject {
 
         lastStartupSaleValue = 0
         gameOutcome = .active
+        
+        // TEMPORARY UNICORN TEST
+//        self.company.marketValue = 1_000_000_000
+//        self.gameOutcome = .active
+//        updateGameOutcome()
 
         saveGame()
     }
