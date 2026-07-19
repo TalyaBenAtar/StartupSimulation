@@ -63,7 +63,7 @@ struct EmployeesView: View {
         } message: {
             if let hiredCandidate {
                 Text(
-                    "\(hiredCandidate.name) has joined your startup for \(formatCurrency(hiredCandidate.monthlySalary)) per month."
+                    "\(hiredCandidate.name) has joined your startup for \(CurrencyFormatter.exact(hiredCandidate.monthlySalary)) per month."
                 )
             }
         }
@@ -245,16 +245,10 @@ struct EmployeesView: View {
         }
     }
 
-    private func formatCurrency(_ amount: Double) -> String {
-        if amount >= 1_000_000 {
-            return String(format: "$%.1fM", amount / 1_000_000)
-        }
-
-        if amount >= 1_000 {
-            return String(format: "$%.0fK", amount / 1_000)
-        }
-
-        return "$\(Int(amount))"
+    private func formatCurrency(
+        _ amount: Double
+    ) -> String {
+        CurrencyFormatter.compact(amount)
     }
 }
 
@@ -437,109 +431,13 @@ struct CandidateCard: View {
         }
     }
 
-    private func formatCurrency(_ amount: Double) -> String {
-        String(format: "$%.1fK", amount / 1_000)
+    private func formatCurrency(
+        _ amount: Double
+    ) -> String {
+        CurrencyFormatter.compact(amount)
     }
 }
-//struct CandidateCard: View {
-//    let candidate: Employee
-//    let canAfford: Bool
-//    let hireAction: () -> Void
-//
-//    var body: some View {
-//        VStack(alignment: .leading, spacing: 12) {
-//            HStack {
-//                VStack(alignment: .leading, spacing: 3) {
-//                    Text(candidate.name)
-//                        .font(.headline)
-//                        .foregroundColor(.white)
-//
-//                    Text(candidate.seniority.rawValue)
-//                        .font(.caption)
-//                        .foregroundColor(.green)
-//                }
-//
-//                Spacer()
-//
-//                Text("\(formatCurrency(candidate.monthlySalary))/mo")
-//                    .font(.subheadline.bold())
-//                    .foregroundColor(.white)
-//            }
-//
-//            Divider()
-//                .overlay(Color.white.opacity(0.15))
-//
-//            infoRow(
-//                icon: "sparkles",
-//                title: candidate.trait
-//            )
-//
-//            infoRow(
-//                icon: "bolt.fill",
-//                title: "Productivity: \(candidate.productivity)/10"
-//            )
-//
-//            infoRow(
-//                icon: candidate.moraleImpact >= 0
-//                    ? "face.smiling.fill"
-//                    : "face.dashed.fill",
-//                title: moraleText
-//            )
-//
-//            Text(candidate.personalNote)
-//                .font(.caption)
-//                .foregroundColor(.white.opacity(0.65))
-//                .fixedSize(horizontal: false, vertical: true)
-//
-//            Button(action: hireAction) {
-//                Text(canAfford ? "Hire Candidate" : "Cannot Afford")
-//                    .font(.subheadline.bold())
-//                    .foregroundColor(canAfford ? .black : .white.opacity(0.6))
-//                    .frame(maxWidth: .infinity)
-//                    .padding(.vertical, 12)
-//                    .background(
-//                        RoundedRectangle(cornerRadius: 12)
-//                            .fill(
-//                                canAfford
-//                                    ? Color.green
-//                                    : Color.gray.opacity(0.4)
-//                            )
-//                    )
-//            }
-//            .disabled(!canAfford)
-//        }
-//        .padding()
-//        .background(
-//            RoundedRectangle(cornerRadius: 18)
-//                .fill(Color.white.opacity(0.10))
-//        )
-//    }
-//
-//    private var moraleText: String {
-//        let sign = candidate.moraleImpact >= 0 ? "+" : ""
-//
-//        return "Team morale: \(sign)\(candidate.moraleImpact)"
-//    }
-//
-//    private func infoRow(
-//        icon: String,
-//        title: String
-//    ) -> some View {
-//        HStack(spacing: 8) {
-//            Image(systemName: icon)
-//                .foregroundColor(.green)
-//                .frame(width: 20)
-//
-//            Text(title)
-//                .font(.caption)
-//                .foregroundColor(.white.opacity(0.8))
-//        }
-//    }
-//
-//    private func formatCurrency(_ amount: Double) -> String {
-//        String(format: "$%.0fK", amount / 1_000)
-//    }
-//}
+
 
 struct HiredEmployeeCard: View {
     @EnvironmentObject private var gameViewModel: GameViewModel
@@ -622,69 +520,13 @@ struct HiredEmployeeCard: View {
         }
     }
 
-    private func formatCurrency(_ amount: Double) -> String {
-        String(format: "$%.1fK", amount / 1_000)
+    private func formatCurrency(
+        _ amount: Double
+    ) -> String {
+        CurrencyFormatter.compact(amount)
     }
 }
 
-//struct HiredEmployeeCard: View {
-//    let employee: Employee
-//    let fireAction: () -> Void
-//
-//    @State private var showFireConfirmation = false
-//
-//    var body: some View {
-//        HStack(spacing: 12) {
-//            Image(systemName: "person.crop.circle.fill")
-//                .font(.title)
-//                .foregroundColor(.purple)
-//
-//            VStack(alignment: .leading, spacing: 3) {
-//                Text(employee.name)
-//                    .font(.subheadline.bold())
-//                    .foregroundColor(.white)
-//
-//                Text(
-//                    "\(employee.seniority.rawValue) • \(formatCurrency(employee.monthlySalary))/mo"
-//                )
-//                .font(.caption)
-//                .foregroundColor(.white.opacity(0.6))
-//            }
-//
-//            Spacer()
-//
-//            Button {
-//                showFireConfirmation = true
-//            } label: {
-//                Image(systemName: "person.crop.circle.badge.minus")
-//                    .foregroundColor(.red)
-//                    .padding(8)
-//                    .background(
-//                        Circle()
-//                            .fill(Color.red.opacity(0.15))
-//                    )
-//            }
-//        }
-//        .padding()
-//        .background(
-//            RoundedRectangle(cornerRadius: 14)
-//                .fill(Color.white.opacity(0.09))
-//        )
-//        .alert("Fire \(employee.name)?", isPresented: $showFireConfirmation) {
-//            Button("Cancel", role: .cancel) {}
-//
-//            Button("Fire", role: .destructive) {
-//                fireAction()
-//            }
-//        } message: {
-//            Text("Firing an employee will reduce team morale.")
-//        }
-//    }
-//
-//    private func formatCurrency(_ amount: Double) -> String {
-//        String(format: "$%.0fK", amount / 1_000)
-//    }
-//}
 
 struct EmployeesView_Previews: PreviewProvider {
     static var previews: some View {

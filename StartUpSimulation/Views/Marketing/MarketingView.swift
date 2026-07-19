@@ -975,24 +975,10 @@ struct MarketingView: View {
     }
 
     private func currency(
-        _ value: Double
+        _ amount: Double
     ) -> String {
-        if value >= 1_000_000 {
-            return String(
-                format:
-                    "$%.1fM",
-                value / 1_000_000
-            )
-        }
-
-        if value >= 1_000 {
-            return String(
-                format:
-                    "$%.0fK",
-                value / 1_000
-            )
-        }
-
-        return "$\(Int(value))"
+        CurrencyFormatter.compact(amount)
     }
+    
+    
 }

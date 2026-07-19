@@ -952,45 +952,20 @@ struct FounderView: View {
         )
     }
 
+    
     private func formatCurrency(
         _ amount: Double
     ) -> String {
-
-        let value = abs(amount)
-
-        if value >= 1_000_000_000 {
-            return String(
-                format: "$%.1fB",
-                value / 1_000_000_000
-            )
-        }
-
-        if value >= 1_000_000 {
-            return String(
-                format: "$%.1fM",
-                value / 1_000_000
-            )
-        }
-
-        if value >= 1_000 {
-            return String(
-                format: "$%.0fK",
-                value / 1_000
-            )
-        }
-
-        return "$\(Int(value))"
+        CurrencyFormatter.compact(amount)
     }
 
     private func formatSignedCurrency(
         _ amount: Double
     ) -> String {
-
-        let sign =
-            amount >= 0 ? "+" : "-"
-
-        return sign +
-            formatCurrency(abs(amount))
+        CurrencyFormatter.compact(
+            amount,
+            showSign: true
+        )
     }
 }
 

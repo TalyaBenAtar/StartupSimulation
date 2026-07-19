@@ -9,11 +9,11 @@ import SwiftUI
 
 struct FinanceView: View {
     @EnvironmentObject private var gameViewModel: GameViewModel
-
+    
     private var company: Company {
         gameViewModel.company
     }
-
+    
     private var finance: FinanceSnapshot {
         FinanceSnapshot(
             company: company,
@@ -21,7 +21,7 @@ struct FinanceView: View {
                 gameViewModel.bankruptcyLimit
         )
     }
-
+    
     var body: some View {
         ZStack {
             LinearGradient(
@@ -41,25 +41,29 @@ struct FinanceView: View {
                 endPoint: .bottomTrailing
             )
             .ignoresSafeArea()
-
+            
             ScrollView {
                 VStack(spacing: 20) {
                     header
-
+                    
                     financialStatusCard
-
+                    
                     currentPositionSection
-
+                    
+                    if company.hadEventThisMonth {
+                        eventImpactSection
+                    }
+                    
                     runwaySection
-
+                    
                     revenueForecastSection
-
+                    
                     recurringExpensesSection
-
+                    
                     if finance.totalOneTimeSpending > 0 {
                         oneTimeSpendingSection
                     }
-
+                    
                     financialAdviceSection
                 }
                 .padding(.horizontal, 18)
@@ -70,9 +74,9 @@ struct FinanceView: View {
         .navigationTitle("Finance")
         .navigationBarTitleDisplayMode(.inline)
     }
-
+    
     // MARK: - Header
-
+    
     private var header: some View {
         VStack(spacing: 8) {
             Image(systemName: "banknote.fill")
@@ -88,14 +92,14 @@ struct FinanceView: View {
                             Color.green.opacity(0.15)
                         )
                 )
-
+            
             Text("Financial Center")
                 .font(.system(
                     size: 30,
                     weight: .bold
                 ))
                 .foregroundColor(.white)
-
+            
             Text(
                 """
                 Understand where money comes from, where it goes, and what is likely to happen next month.
@@ -108,9 +112,9 @@ struct FinanceView: View {
             .multilineTextAlignment(.center)
         }
     }
-
+    
     // MARK: - Financial Status
-
+    
     private var financialStatusCard: some View {
         HStack(spacing: 14) {
             Image(
@@ -118,7 +122,7 @@ struct FinanceView: View {
             )
             .font(.title2)
             .foregroundColor(statusColor)
-
+            
             VStack(
                 alignment: .leading,
                 spacing: 5
@@ -128,7 +132,7 @@ struct FinanceView: View {
                 )
                 .font(.headline)
                 .foregroundColor(.white)
-
+                
                 Text(
                     finance.financialStatus
                         .explanation
@@ -138,7 +142,7 @@ struct FinanceView: View {
                     .white.opacity(0.65)
                 )
             }
-
+            
             Spacer()
         }
         .padding()
@@ -158,9 +162,9 @@ struct FinanceView: View {
             )
         )
     }
-
+    
     // MARK: - Current Position
-
+    
     private var currentPositionSection: some View {
         VStack(
             alignment: .leading,
@@ -170,7 +174,7 @@ struct FinanceView: View {
                 title: "Current Position",
                 icon: "dollarsign.circle.fill"
             )
-
+            
             financeRow(
                 title: "Current Cash",
                 value: formatCurrency(
@@ -179,7 +183,7 @@ struct FinanceView: View {
                 explanation:
                     "Money currently available to operate and invest."
             )
-
+            
             financeRow(
                 title: "Monthly Revenue",
                 value: formatCurrency(
@@ -188,7 +192,7 @@ struct FinanceView: View {
                 explanation:
                     "Expected customer income during the current month."
             )
-
+            
             financeRow(
                 title: "Recurring Expenses",
                 value:
@@ -196,12 +200,12 @@ struct FinanceView: View {
                 explanation:
                     "Costs that return every month."
             )
-
+            
             Divider()
                 .overlay(
                     Color.white.opacity(0.15)
                 )
-
+            
             financeRow(
                 title: "Current Monthly Profit",
                 value: formatSignedCurrency(
@@ -209,11 +213,20 @@ struct FinanceView: View {
                 ),
                 explanation:
                     finance.currentMonthlyProfit >= 0
-                    ? "Current revenue covers recurring expenses."
-                    : "The company currently spends more each month than it earns.",
+                ? "Current revenue covers recurring expenses."
+                : "The company currently spends more each month than it earns."
+            )
+            
+            financeRow(
+                title: "Current Month Cash Change",
+                value: formatSignedCurrency(
+                    company.cashChangeThisMonth
+                ),
+                explanation:
+                    "Recurring profit, minus one-time spending, plus the direct cash effect of this month’s event.",
                 highlighted: true
             )
-
+            
             financeRow(
                 title: "Bankruptcy Limit",
                 value: formatCurrency(
@@ -225,9 +238,17 @@ struct FinanceView: View {
         }
         .financeSectionCard()
     }
-
+    
+    // MARK: - Event Impact
+    
+    private var eventImpactSection: some View {
+        FinanceEventImpactCard(
+            company: company
+        )
+    }
+    
     // MARK: - Runway
-
+    
     private var runwaySection: some View {
         VStack(
             alignment: .leading,
@@ -237,12 +258,12 @@ struct FinanceView: View {
                 title: "Runway Forecast",
                 icon: "calendar.badge.clock"
             )
-
+            
             if finance.projectedMonthlyProfit >= 0 {
                 Text("No immediate runway limit")
                     .font(.title3.bold())
                     .foregroundColor(.green)
-
+                
                 Text(
                     """
                     The projected monthly result is profitable, so cash should grow instead of moving toward bankruptcy.
@@ -256,7 +277,7 @@ struct FinanceView: View {
                 Text(runwayText)
                     .font(.title3.bold())
                     .foregroundColor(statusColor)
-
+                
                 Text(
                     """
                     This estimate uses projected revenue and recurring monthly expenses. New purchases, hiring, firing, and events can shorten the runway.
@@ -266,15 +287,15 @@ struct FinanceView: View {
                 .foregroundColor(
                     .white.opacity(0.65)
                 )
-
+                
                 runwayProgressBar
             }
-
+            
             Divider()
                 .overlay(
                     Color.white.opacity(0.15)
                 )
-
+            
             financeRow(
                 title: "Projected Monthly Result",
                 value: formatSignedCurrency(
@@ -286,7 +307,7 @@ struct FinanceView: View {
         }
         .financeSectionCard()
     }
-
+    
     private var runwayProgressBar: some View {
         GeometryReader { geometry in
             ZStack(alignment: .leading) {
@@ -295,22 +316,22 @@ struct FinanceView: View {
                         Color.white.opacity(0.12)
                     )
                     .frame(height: 10)
-
+                
                 Capsule()
                     .fill(statusColor)
                     .frame(
                         width:
                             geometry.size.width *
-                            runwayProgress,
+                        runwayProgress,
                         height: 10
                     )
             }
         }
         .frame(height: 10)
     }
-
+    
     // MARK: - Revenue Forecast
-
+    
     private var revenueForecastSection: some View {
         VStack(
             alignment: .leading,
@@ -321,7 +342,7 @@ struct FinanceView: View {
                 icon:
                     "chart.line.uptrend.xyaxis"
             )
-
+            
             Text(
                 """
                 The next month’s revenue is calculated from the company’s real performance. No random cash changes are included.
@@ -331,7 +352,7 @@ struct FinanceView: View {
             .foregroundColor(
                 .white.opacity(0.6)
             )
-
+            
             financeRow(
                 title: "Current Revenue",
                 value: formatCurrency(
@@ -340,7 +361,7 @@ struct FinanceView: View {
                 explanation:
                     "The starting revenue before this month’s growth and losses."
             )
-
+            
             contributionRow(
                 title: "Employee Growth",
                 amount:
@@ -348,37 +369,37 @@ struct FinanceView: View {
                 explanation:
                     "Revenue contribution from employees, strengthened by product quality."
             )
-
+            
             contributionRow(
                 title: "Product Quality",
                 amount:
                     finance.productQualityEffect,
                 explanation:
                     company.productQuality >= 50
-                    ? "Product quality is helping customer retention and growth."
-                    : "Low product quality is causing customer loss."
+                ? "Product quality is helping customer retention and growth."
+                : "Low product quality is causing customer loss."
             )
-
+            
             contributionRow(
                 title: "Brand Awareness",
                 amount:
                     finance.brandAwarenessEffect,
                 explanation:
                     company.brandAwareness >= 50
-                    ? "Strong awareness helps attract customers."
-                    : "Low awareness limits customer acquisition."
+                ? "Strong awareness helps attract customers."
+                : "Low awareness limits customer acquisition."
             )
-
+            
             contributionRow(
                 title: "Team Morale",
                 amount:
                     finance.moraleEffect,
                 explanation:
                     company.employees.isEmpty
-                    ? "Morale has no effect because there are no employees."
-                    : "Team morale affects productivity and customer growth."
+                ? "Morale has no effect because there are no employees."
+                : "Team morale affects productivity and customer growth."
             )
-
+            
             if finance.missingTeamPenalty > 0 {
                 contributionRow(
                     title: "No-Team Penalty",
@@ -388,12 +409,12 @@ struct FinanceView: View {
                         "The founder cannot maintain product, support, and sales alone forever."
                 )
             }
-
+            
             Divider()
                 .overlay(
                     Color.white.opacity(0.15)
                 )
-
+            
             financeRow(
                 title: "Projected Revenue",
                 value: formatCurrency(
@@ -406,9 +427,9 @@ struct FinanceView: View {
         }
         .financeSectionCard()
     }
-
+    
     // MARK: - Recurring Expenses
-
+    
     private var recurringExpensesSection: some View {
         VStack(
             alignment: .leading,
@@ -418,7 +439,7 @@ struct FinanceView: View {
                 title: "Recurring Expenses",
                 icon: "repeat.circle.fill"
             )
-
+            
             financeRow(
                 title: "Operating Costs",
                 value:
@@ -426,7 +447,7 @@ struct FinanceView: View {
                 explanation:
                     "Hosting, software, legal services, administration, and basic company operations."
             )
-
+            
             financeRow(
                 title: "Employee Salaries",
                 value:
@@ -434,7 +455,7 @@ struct FinanceView: View {
                 explanation:
                     "\(company.employeeCount) employee\(company.employeeCount == 1 ? "" : "s") paid every month."
             )
-
+            
             financeRow(
                 title: "Marketing Subscription",
                 value:
@@ -442,12 +463,12 @@ struct FinanceView: View {
                 explanation:
                     activeMarketingExplanation
             )
-
+            
             Divider()
                 .overlay(
                     Color.white.opacity(0.15)
                 )
-
+            
             financeRow(
                 title: "Total Every Month",
                 value:
@@ -459,9 +480,9 @@ struct FinanceView: View {
         }
         .financeSectionCard()
     }
-
+    
     // MARK: - One-Time Spending
-
+    
     private var oneTimeSpendingSection: some View {
         VStack(
             alignment: .leading,
@@ -471,7 +492,7 @@ struct FinanceView: View {
                 title: "Spent This Month",
                 icon: "cart.fill"
             )
-
+            
             Text(
                 """
                 These costs were already removed from cash when you performed each action. They will not be charged again at the end of the month.
@@ -481,7 +502,7 @@ struct FinanceView: View {
             .foregroundColor(
                 .white.opacity(0.6)
             )
-
+            
             if finance.productSpending > 0 {
                 financeRow(
                     title: "Product Development",
@@ -491,7 +512,7 @@ struct FinanceView: View {
                         "Bug fixes, features, and major product releases."
                 )
             }
-
+            
             if finance.oneTimeMarketingSpending > 0 {
                 financeRow(
                     title: "One-Time Marketing",
@@ -501,7 +522,7 @@ struct FinanceView: View {
                         "Marketing campaigns purchased during this month."
                 )
             }
-
+            
             if finance.hiringSpending > 0 {
                 financeRow(
                     title: "Hiring Costs",
@@ -511,7 +532,7 @@ struct FinanceView: View {
                         "Recruitment and onboarding costs for new employees."
                 )
             }
-
+            
             if finance.severanceSpending > 0 {
                 financeRow(
                     title: "Severance",
@@ -521,12 +542,12 @@ struct FinanceView: View {
                         "One-time payments made when employees were fired."
                 )
             }
-
+            
             Divider()
                 .overlay(
                     Color.white.opacity(0.15)
                 )
-
+            
             financeRow(
                 title: "Total One-Time Spending",
                 value:
@@ -538,9 +559,9 @@ struct FinanceView: View {
         }
         .financeSectionCard()
     }
-
+    
     // MARK: - Advice
-
+    
     private var financialAdviceSection: some View {
         VStack(
             alignment: .leading,
@@ -550,7 +571,7 @@ struct FinanceView: View {
                 title: "Financial Analysis",
                 icon: "lightbulb.fill"
             )
-
+            
             ForEach(
                 financialAdvice,
                 id: \.self
@@ -565,7 +586,7 @@ struct FinanceView: View {
                     )
                     .foregroundColor(.green)
                     .padding(.top, 2)
-
+                    
                     Text(advice)
                         .font(.subheadline)
                         .foregroundColor(
@@ -576,12 +597,12 @@ struct FinanceView: View {
         }
         .financeSectionCard()
     }
-
+    
     // MARK: - Advice Logic
-
+    
     private var financialAdvice: [String] {
         var advice: [String] = []
-
+        
         if company.productQuality < 40 {
             advice.append(
                 """
@@ -589,7 +610,7 @@ struct FinanceView: View {
                 """
             )
         }
-
+        
         if company.brandAwareness < 40 {
             advice.append(
                 """
@@ -597,7 +618,7 @@ struct FinanceView: View {
                 """
             )
         }
-
+        
         if company.employees.isEmpty {
             advice.append(
                 """
@@ -605,7 +626,7 @@ struct FinanceView: View {
                 """
             )
         }
-
+        
         if finance.salaryExpenses >
             finance.currentRevenue * 0.7 &&
             company.employeeCount > 0 {
@@ -615,7 +636,7 @@ struct FinanceView: View {
                 """
             )
         }
-
+        
         if finance.marketingSubscriptionExpenses > 0 &&
             finance.projectedMonthlyProfit < 0 {
             advice.append(
@@ -624,7 +645,7 @@ struct FinanceView: View {
                 """
             )
         }
-
+        
         if company.cash < 0 {
             advice.append(
                 """
@@ -632,7 +653,7 @@ struct FinanceView: View {
                 """
             )
         }
-
+        
         if finance.projectedMonthlyProfit > 0 {
             advice.append(
                 """
@@ -640,7 +661,7 @@ struct FinanceView: View {
                 """
             )
         }
-
+        
         if advice.isEmpty {
             advice.append(
                 """
@@ -648,12 +669,12 @@ struct FinanceView: View {
                 """
             )
         }
-
+        
         return advice
     }
-
+    
     // MARK: - Helpers
-
+    
     private func sectionTitle(
         title: String,
         icon: String
@@ -661,13 +682,13 @@ struct FinanceView: View {
         HStack(spacing: 8) {
             Image(systemName: icon)
                 .foregroundColor(.green)
-
+            
             Text(title)
                 .font(.headline)
                 .foregroundColor(.white)
         }
     }
-
+    
     private func financeRow(
         title: String,
         value: String,
@@ -690,9 +711,9 @@ struct FinanceView: View {
                         ? .white
                         : .white.opacity(0.75)
                     )
-
+                
                 Spacer()
-
+                
                 Text(value)
                     .font(
                         highlighted
@@ -705,7 +726,7 @@ struct FinanceView: View {
                         : .white
                     )
             }
-
+            
             Text(explanation)
                 .font(.caption)
                 .foregroundColor(
@@ -713,7 +734,7 @@ struct FinanceView: View {
                 )
         }
     }
-
+    
     private func contributionRow(
         title: String,
         amount: Double,
@@ -729,9 +750,9 @@ struct FinanceView: View {
                     .foregroundColor(
                         .white.opacity(0.75)
                     )
-
+                
                 Spacer()
-
+                
                 Text(
                     formatSignedCurrency(amount)
                 )
@@ -742,7 +763,7 @@ struct FinanceView: View {
                     : .red
                 )
             }
-
+            
             Text(explanation)
                 .font(.caption)
                 .foregroundColor(
@@ -750,132 +771,325 @@ struct FinanceView: View {
                 )
         }
     }
-
+    
     private var activeMarketingExplanation: String {
         guard let campaign =
-            company.activeMonthlyMarketingCampaign
+                company.activeMonthlyMarketingCampaign
         else {
             return """
             No recurring marketing campaign is currently active.
             """
         }
-
+        
         return """
         \(campaign.name) is active and will be charged every month until canceled.
         """
     }
-
+    
     private var runwayText: String {
         guard let months =
-            finance.estimatedRunwayMonths
+                finance.estimatedRunwayMonths
         else {
             return "No immediate runway limit"
         }
-
+        
         if months < 1 {
             return "Less than 1 month remaining"
         }
-
+        
         return String(
             format:
                 "%.1f months until bankruptcy",
             months
         )
     }
-
+    
     private var runwayProgress: CGFloat {
         guard let months =
-            finance.estimatedRunwayMonths
+                finance.estimatedRunwayMonths
         else {
             return 1
         }
-
+        
         return CGFloat(
             min(max(months / 12, 0), 1)
         )
     }
-
+    
     private var statusColor: Color {
         switch finance.financialStatus {
         case .profitable:
             return .green
-
+            
         case .stable:
             return .blue
-
+            
         case .risky:
             return .orange
-
+            
         case .critical:
             return .red
         }
     }
-
+    
     private var statusIcon: String {
         switch finance.financialStatus {
         case .profitable:
             return "chart.line.uptrend.xyaxis"
-
+            
         case .stable:
             return "checkmark.shield.fill"
-
+            
         case .risky:
             return "exclamationmark.triangle.fill"
-
+            
         case .critical:
             return "creditcard.trianglebadge.exclamationmark"
         }
     }
-
+    
     private func formatCurrency(
         _ amount: Double
     ) -> String {
-        let sign =
-            amount < 0 ? "-" : ""
-
-        let absoluteAmount =
-            abs(amount)
-
-        if absoluteAmount >=
-            1_000_000_000 {
-            return sign + String(
-                format: "$%.1fB",
-                absoluteAmount /
-                    1_000_000_000
-            )
-        }
-
-        if absoluteAmount >=
-            1_000_000 {
-            return sign + String(
-                format: "$%.1fM",
-                absoluteAmount /
-                    1_000_000
-            )
-        }
-
-        if absoluteAmount >= 1_000 {
-            return sign + String(
-                format: "$%.0fK",
-                absoluteAmount / 1_000
-            )
-        }
-
-        return sign +
-            "$\(Int(absoluteAmount))"
+        CurrencyFormatter.compact(amount)
     }
-
+    
     private func formatSignedCurrency(
         _ amount: Double
     ) -> String {
-        let sign =
-            amount >= 0 ? "+" : "-"
-
-        return sign +
-            formatCurrency(abs(amount))
+        CurrencyFormatter.compact(
+            amount,
+            showSign: true
+        )
     }
 }
 
+// MARK: - Event Impact Card
+
+    private struct FinanceEventImpactCard: View {
+        let company: Company
+        
+        var body: some View {
+            VStack(
+                alignment: .leading,
+                spacing: 14
+            ) {
+                cardHeader
+                
+                eventInformation
+                
+                Divider()
+                    .overlay(
+                        Color.white.opacity(0.15)
+                    )
+                
+                financialChanges
+                
+                percentageChanges
+                
+                footerText
+            }
+            .padding()
+            .background(cardBackground)
+        }
+        
+        // MARK: - Header
+        
+        private var cardHeader: some View {
+            HStack(spacing: 8) {
+                Image(
+                    systemName:
+                        "exclamationmark.bubble.fill"
+                )
+                .foregroundColor(.green)
+                
+                Text("Event Impact This Month")
+                    .font(.headline)
+                    .foregroundColor(.white)
+            }
+        }
+        
+        // MARK: - Event Information
+        
+        @ViewBuilder
+        private var eventInformation: some View {
+            if let eventTitle =
+                company.lastEventTitle {
+                
+                Text(eventTitle)
+                    .font(.headline)
+                    .foregroundColor(.white)
+            }
+            
+            if let choiceTitle =
+                company.lastEventChoiceTitle {
+                
+                Text(
+                    "Decision: \(choiceTitle)"
+                )
+                .font(.subheadline)
+                .foregroundColor(
+                    .white.opacity(0.65)
+                )
+            }
+        }
+        
+        // MARK: - Financial Changes
+        
+        @ViewBuilder
+        private var financialChanges: some View {
+            if company.eventCashChangeThisMonth != 0 {
+                moneyRow(
+                    title: "Cash",
+                    amount:
+                        company.eventCashChangeThisMonth
+                )
+            }
+            
+            if company.eventRevenueChangeThisMonth != 0 {
+                moneyRow(
+                    title: "Monthly Revenue",
+                    amount:
+                        company.eventRevenueChangeThisMonth
+                )
+            }
+            
+            if company.eventMarketValueChangeThisMonth != 0 {
+                moneyRow(
+                    title: "Market Value",
+                    amount:
+                        company.eventMarketValueChangeThisMonth
+                )
+            }
+        }
+        
+        // MARK: - Percentage Changes
+        
+        @ViewBuilder
+        private var percentageChanges: some View {
+            if company.eventProductChangeThisMonth != 0 {
+                percentageRow(
+                    title: "Product Quality",
+                    amount:
+                        company.eventProductChangeThisMonth
+                )
+            }
+            
+            if company.eventMoraleChangeThisMonth != 0 {
+                percentageRow(
+                    title: "Team Morale",
+                    amount:
+                        company.eventMoraleChangeThisMonth
+                )
+            }
+            
+            if company.eventBrandChangeThisMonth != 0 {
+                percentageRow(
+                    title: "Brand Awareness",
+                    amount:
+                        company.eventBrandChangeThisMonth
+                )
+            }
+        }
+        
+        // MARK: - Footer
+        
+        private var footerText: some View {
+            Text(
+            """
+            These effects have already been applied and will appear in the next month summary.
+            """
+            )
+            .font(.caption)
+            .foregroundColor(
+                .white.opacity(0.5)
+            )
+        }
+        
+        private var cardBackground: some View {
+            RoundedRectangle(
+                cornerRadius: 18
+            )
+            .fill(
+                Color.white.opacity(0.09)
+            )
+        }
+        
+        // MARK: - Rows
+        
+        private func moneyRow(
+            title: String,
+            amount: Double
+        ) -> some View {
+            HStack {
+                Text(title)
+                    .font(.subheadline)
+                    .foregroundColor(
+                        .white.opacity(0.75)
+                    )
+                
+                Spacer()
+                
+                Text(
+                    formattedMoney(amount)
+                )
+                .font(.subheadline.bold())
+                .foregroundColor(
+                    amount >= 0
+                    ? Color.green
+                    : Color.red
+                )
+            }
+        }
+        
+        private func percentageRow(
+            title: String,
+            amount: Int
+        ) -> some View {
+            HStack {
+                Text(title)
+                    .font(.subheadline)
+                    .foregroundColor(
+                        .white.opacity(0.75)
+                    )
+                
+                Spacer()
+                
+                Text(
+                    formattedPercentage(amount)
+                )
+                .font(.subheadline.bold())
+                .foregroundColor(
+                    amount >= 0
+                    ? Color.green
+                    : Color.red
+                )
+            }
+        }
+        
+        // MARK: - Formatting
+        
+        private func formattedPercentage(
+            _ amount: Int
+        ) -> String {
+            if amount >= 0 {
+                return "+\(amount)%"
+            }
+            
+            return "\(amount)%"
+        }
+        
+        
+        private func formattedMoney(
+            _ amount: Double
+        ) -> String {
+            CurrencyFormatter.compact(
+                amount,
+                showSign: true
+            )
+        }
+    }
+    
 // MARK: - Card Style
 
 private extension View {

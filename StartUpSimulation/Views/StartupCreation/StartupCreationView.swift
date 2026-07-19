@@ -231,28 +231,7 @@ struct StartupCreationView: View {
     private func formatCurrency(
         _ amount: Double
     ) -> String {
-        if amount >= 1_000_000_000 {
-            return String(
-                format: "$%.1fB",
-                amount / 1_000_000_000
-            )
-        }
-
-        if amount >= 1_000_000 {
-            return String(
-                format: "$%.1fM",
-                amount / 1_000_000
-            )
-        }
-
-        if amount >= 1_000 {
-            return String(
-                format: "$%.0fK",
-                amount / 1_000
-            )
-        }
-
-        return "$\(Int(amount))"
+        CurrencyFormatter.compact(amount)
     }
 
 }

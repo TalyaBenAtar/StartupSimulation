@@ -16,6 +16,7 @@ final class GameViewModel: ObservableObject {
     @Published var gameOutcome: GameOutcome
     @Published var playerProfile: PlayerProfile
     @Published var lastStartupSaleValue: Double
+    @Published var currentEvent: GameEvent?
 
     // MARK: - Game Limits
 
@@ -56,6 +57,8 @@ final class GameViewModel: ObservableObject {
             self.gameOutcome = .active
             self.lastStartupSaleValue = 0
         }
+
+        self.currentEvent = nil
     }
 
     // MARK: - Persistence
@@ -363,6 +366,31 @@ final class GameViewModel: ObservableObject {
     // MARK: - Advance Month
 
     func advanceMonth() -> MonthResult {
+        
+        debugPrintCompanyValues(
+            title:
+                "MONTH \(company.month) — BEFORE END-MONTH PROCESSING"
+        )
+
+        let debugStartingCash =
+            company.cash
+
+        let debugStartingRevenue =
+            company.monthlyRevenue
+
+        let debugStartingMarketValue =
+            company.marketValue
+
+        let debugStartingProduct =
+            company.productQuality
+
+        let debugStartingMorale =
+            company.employeeMorale
+
+        let debugStartingBrand =
+            company.brandAwareness
+        // end debug
+        
         let completedMonth =
             company.month
 
@@ -483,6 +511,31 @@ final class GameViewModel: ObservableObject {
 
         updateGameOutcome()
 
+        //debug
+        debugPrintValueComparison(
+            title:
+                "END-OF-MONTH CALCULATION — MONTH \(completedMonth)",
+            beforeCash:
+                debugStartingCash,
+            beforeRevenue:
+                debugStartingRevenue,
+            beforeMarketValue:
+                debugStartingMarketValue,
+            beforeProduct:
+                debugStartingProduct,
+            beforeMorale:
+                debugStartingMorale,
+            beforeBrand:
+                debugStartingBrand
+        )
+
+        debugPrintCompanyValues(
+            title:
+                "MONTH \(completedMonth) FINISHED — NOW ENTERING MONTH \(company.month)"
+        )
+        
+        
+        
         // MARK: Month Result
 
         let result = MonthResult(
@@ -524,6 +577,25 @@ final class GameViewModel: ObservableObject {
                 company.brandAwareness,
             totalBrandAwarenessChange:
                 company.monthlyBrandAwarenessChange,
+            
+            eventTitle:
+                company.lastEventTitle,
+            eventChoiceTitle:
+                company.lastEventChoiceTitle,
+
+            eventCashChange:
+                company.eventCashChangeThisMonth,
+            eventRevenueChange:
+                company.eventRevenueChangeThisMonth,
+            eventMarketValueChange:
+                company.eventMarketValueChangeThisMonth,
+
+            eventProductChange:
+                company.eventProductChangeThisMonth,
+            eventMoraleChange:
+                company.eventMoraleChangeThisMonth,
+            eventBrandChange:
+                company.eventBrandChangeThisMonth,
 
             marketingSpend:
                 oneTimeMarketingSpending +
@@ -577,6 +649,285 @@ final class GameViewModel: ObservableObject {
         saveGame()
 
         return result
+    }
+    
+    
+    // MARK: - Debug Value Tracking
+
+    private func debugPrintCompanyValues(
+        title: String
+    ) {
+        print("")
+        print("==================================================")
+        print(title)
+        print("==================================================")
+        print("MONTH: \(company.month)")
+        print("CASH: \(debugMoney(company.cash))")
+        print("MONTHLY REVENUE: \(debugMoney(company.monthlyRevenue))")
+        print("MARKET VALUE: \(debugMoney(company.marketValue))")
+        print("PRODUCT QUALITY: \(company.productQuality)%")
+        print("EMPLOYEE MORALE: \(company.employeeMorale)%")
+        print("BRAND AWARENESS: \(company.brandAwareness)%")
+        print("==================================================")
+        print("")
+    }
+
+    private func debugPrintEventChanges(
+        eventTitle: String,
+        choice: EventChoice
+    ) {
+        print("")
+        print("--------------------------------------------------")
+        print("EVENT SELECTED")
+        print("--------------------------------------------------")
+        print("EVENT: \(eventTitle)")
+        print("CHOICE: \(choice.title)")
+        print("")
+        print("DECLARED EVENT CHANGES:")
+        print("Cash: \(debugSignedMoney(choice.cashChange))")
+        print("Monthly Revenue: \(debugSignedMoney(choice.revenueChange))")
+        print("Market Value: \(debugSignedMoney(choice.marketValueChange))")
+        print("Product Quality: \(debugSignedPercent(choice.productChange))")
+        print("Employee Morale: \(debugSignedPercent(choice.moraleChange))")
+        print("Brand Awareness: \(debugSignedPercent(choice.brandChange))")
+        print("--------------------------------------------------")
+        print("")
+    }
+
+    private func debugPrintValueComparison(
+        title: String,
+        beforeCash: Double,
+        beforeRevenue: Double,
+        beforeMarketValue: Double,
+        beforeProduct: Int,
+        beforeMorale: Int,
+        beforeBrand: Int
+    ) {
+        print("")
+        print("**************************************************")
+        print(title)
+        print("**************************************************")
+
+        debugPrintComparisonRow(
+            name: "Cash",
+            before: beforeCash,
+            after: company.cash
+        )
+
+        debugPrintComparisonRow(
+            name: "Monthly Revenue",
+            before: beforeRevenue,
+            after: company.monthlyRevenue
+        )
+
+        debugPrintComparisonRow(
+            name: "Market Value",
+            before: beforeMarketValue,
+            after: company.marketValue
+        )
+
+        debugPrintPercentComparisonRow(
+            name: "Product Quality",
+            before: beforeProduct,
+            after: company.productQuality
+        )
+
+        debugPrintPercentComparisonRow(
+            name: "Employee Morale",
+            before: beforeMorale,
+            after: company.employeeMorale
+        )
+
+        debugPrintPercentComparisonRow(
+            name: "Brand Awareness",
+            before: beforeBrand,
+            after: company.brandAwareness
+        )
+
+        print("**************************************************")
+        print("")
+    }
+
+    private func debugPrintComparisonRow(
+        name: String,
+        before: Double,
+        after: Double
+    ) {
+        let difference =
+            after - before
+
+        print("\(name):")
+        print("  Before: \(debugMoney(before))")
+        print("  Change: \(debugSignedMoney(difference))")
+        print("  After:  \(debugMoney(after))")
+    }
+
+    private func debugPrintPercentComparisonRow(
+        name: String,
+        before: Int,
+        after: Int
+    ) {
+        let difference =
+            after - before
+
+        print("\(name):")
+        print("  Before: \(before)%")
+        print("  Change: \(debugSignedPercent(difference))")
+        print("  After:  \(after)%")
+    }
+
+    private func debugMoney(
+        _ amount: Double
+    ) -> String {
+        String(
+            format: "$%.2f",
+            amount
+        )
+    }
+
+    private func debugSignedMoney(
+        _ amount: Double
+    ) -> String {
+        let sign =
+            amount >= 0 ? "+" : "-"
+
+        return sign +
+            String(
+                format: "$%.2f",
+                abs(amount)
+            )
+    }
+
+    private func debugSignedPercent(
+        _ amount: Int
+    ) -> String {
+        if amount >= 0 {
+            return "+\(amount)%"
+        }
+
+        return "\(amount)%"
+    }
+
+    // MARK: - Events
+
+    func generateMonthlyEvent() {
+        guard gameOutcome == .active else {
+            currentEvent = nil
+            return
+        }
+
+        debugPrintCompanyValues(
+            title:
+                "BEGINNING OF MONTH \(company.month) — BEFORE EVENT"
+        )
+
+        currentEvent =
+            GameEventManager.shared.randomEvent(
+                for: company.stage
+            )
+
+        if let currentEvent {
+            print(
+                "Generated event for Month \(company.month): \(currentEvent.title)"
+            )
+        } else {
+            print(
+                "No event generated for Month \(company.month)"
+            )
+        }
+    }
+
+    
+    func chooseEventOption(
+        _ choice: EventChoice
+    ) {
+        guard gameOutcome == .active else {
+            currentEvent = nil
+            return
+        }
+
+        let eventTitle =
+            currentEvent?.title ??
+            "Unknown Event"
+
+        let cashBeforeEvent =
+            company.cash
+
+        let revenueBeforeEvent =
+            company.monthlyRevenue
+
+        let marketValueBeforeEvent =
+            company.marketValue
+
+        let productBeforeEvent =
+            company.productQuality
+
+        let moraleBeforeEvent =
+            company.employeeMorale
+
+        let brandBeforeEvent =
+            company.brandAwareness
+
+        debugPrintEventChanges(
+            eventTitle: eventTitle,
+            choice: choice
+        )
+
+        company.cash +=
+            choice.cashChange
+
+        company.monthlyRevenue =
+            max(
+                0,
+                company.monthlyRevenue +
+                    choice.revenueChange
+            )
+
+        changeMorale(
+            by: choice.moraleChange
+        )
+
+        changeProductQuality(
+            by: choice.productChange
+        )
+
+        changeBrandAwareness(
+            by: choice.brandChange
+        )
+
+        company.marketValue =
+            max(
+                0,
+                company.marketValue +
+                    choice.marketValueChange
+            )
+
+        debugPrintValueComparison(
+            title:
+                "ACTUAL EVENT RESULT — MONTH \(company.month)",
+            beforeCash:
+                cashBeforeEvent,
+            beforeRevenue:
+                revenueBeforeEvent,
+            beforeMarketValue:
+                marketValueBeforeEvent,
+            beforeProduct:
+                productBeforeEvent,
+            beforeMorale:
+                moraleBeforeEvent,
+            beforeBrand:
+                brandBeforeEvent
+        )
+
+        debugPrintCompanyValues(
+            title:
+                "MONTH \(company.month) — IMMEDIATELY AFTER EVENT"
+        )
+
+        currentEvent = nil
+
+        updateGameOutcome()
+        saveGame()
     }
 
     // MARK: - Game Outcome

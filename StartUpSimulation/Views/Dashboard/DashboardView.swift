@@ -147,12 +147,29 @@ struct DashboardView: View {
                 .environmentObject(gameViewModel)
         }
         
-        .sheet(isPresented: $showMonthSummary) {
+        .sheet(
+            isPresented: $showMonthSummary,
+            onDismiss: {
+                gameViewModel.generateMonthlyEvent()
+            }
+        ) {
             if let monthResult {
                 MonthSummaryView(result: monthResult)
             }
         }
-        
+
+        .fullScreenCover(
+            item: $gameViewModel.currentEvent,
+            onDismiss: {
+                if gameViewModel.gameOutcome != .active {
+                    showGameOver = true
+                }
+            }
+        ) { event in
+            GameEventView(event: event)
+                .environmentObject(gameViewModel)
+        }
+
         .fullScreenCover(isPresented: $showGameOver) {
             GameOverView(
                 onReturnToMainMenu: {
@@ -439,20 +456,10 @@ struct DashboardView: View {
     }
     
 
-    private func formatCurrency(_ amount: Double) -> String {
-        if amount >= 1_000_000_000 {
-            return String(format: "$%.1fB", amount / 1_000_000_000)
-        }
-
-        if amount >= 1_000_000 {
-            return String(format: "$%.1fM", amount / 1_000_000)
-        }
-
-        if amount >= 1_000 {
-            return String(format: "$%.0fK", amount / 1_000)
-        }
-
-        return "$\(Int(amount))"
+    private func formatCurrency(
+        _ amount: Double
+    ) -> String {
+        CurrencyFormatter.compact(amount)
     }
 }
 
@@ -959,49 +966,22 @@ struct MonthSummaryView: View {
     }
 
     // MARK: - Formatting
-
+    
     private func formatCurrency(
         _ amount: Double
     ) -> String {
-        let absoluteAmount = abs(amount)
-
-        if absoluteAmount >=
-            1_000_000_000 {
-            return String(
-                format: "$%.1fB",
-                absoluteAmount /
-                    1_000_000_000
-            )
-        }
-
-        if absoluteAmount >=
-            1_000_000 {
-            return String(
-                format: "$%.1fM",
-                absoluteAmount /
-                    1_000_000
-            )
-        }
-
-        if absoluteAmount >= 1_000 {
-            return String(
-                format: "$%.0fK",
-                absoluteAmount / 1_000
-            )
-        }
-
-        return "$\(Int(absoluteAmount))"
+        CurrencyFormatter.compact(amount)
     }
-
+    
     private func formatSignedCurrency(
         _ amount: Double
     ) -> String {
-        let sign =
-            amount >= 0 ? "+" : "-"
-
-        return sign +
-            formatCurrency(abs(amount))
+        CurrencyFormatter.compact(
+            amount,
+            showSign: true
+        )
     }
+
 }
 
 private extension View {

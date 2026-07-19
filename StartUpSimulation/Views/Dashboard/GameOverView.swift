@@ -432,34 +432,7 @@ struct GameOverView: View {
     private func formatCurrency(
         _ amount: Double
     ) -> String {
-        let sign = amount < 0 ? "-" : ""
-        let absoluteAmount = abs(amount)
-
-        if absoluteAmount >= 1_000_000_000 {
-            return sign + String(
-                format: "$%.1fB",
-                absoluteAmount /
-                    1_000_000_000
-            )
-        }
-
-        if absoluteAmount >= 1_000_000 {
-            return sign + String(
-                format: "$%.1fM",
-                absoluteAmount /
-                    1_000_000
-            )
-        }
-
-        if absoluteAmount >= 1_000 {
-            return sign + String(
-                format: "$%.0fK",
-                absoluteAmount / 1_000
-            )
-        }
-
-        return sign +
-            "$\(Int(absoluteAmount))"
+        CurrencyFormatter.compact(amount)
     }
 }
 
@@ -485,4 +458,3 @@ struct GameOverView_Previews:
             .environmentObject(game)
         }
     }
-

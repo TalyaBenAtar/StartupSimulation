@@ -43,6 +43,21 @@ struct Company: Codable {
     var monthlyMoraleChange: Int
     var monthlyBrandAwarenessChange: Int
 
+    // MARK: - Current Month Event Impact
+    //
+    // These are optional so older saved games can still be decoded.
+
+    var lastEventTitle: String?
+    var lastEventChoiceTitle: String?
+
+    var monthlyEventCashChange: Double?
+    var monthlyEventRevenueChange: Double?
+    var monthlyEventMarketValueChange: Double?
+
+    var monthlyEventProductChange: Int?
+    var monthlyEventMoraleChange: Int?
+    var monthlyEventBrandChange: Int?
+
     // MARK: - Last Marketing Result
 
     var lastMarketingCampaign: MarketingCampaign?
@@ -77,6 +92,36 @@ struct Company: Codable {
             .monthlyCost ?? 0
     }
 
+    // MARK: - Event Values
+
+    var eventCashChangeThisMonth: Double {
+        monthlyEventCashChange ?? 0
+    }
+
+    var eventRevenueChangeThisMonth: Double {
+        monthlyEventRevenueChange ?? 0
+    }
+
+    var eventMarketValueChangeThisMonth: Double {
+        monthlyEventMarketValueChange ?? 0
+    }
+
+    var eventProductChangeThisMonth: Int {
+        monthlyEventProductChange ?? 0
+    }
+
+    var eventMoraleChangeThisMonth: Int {
+        monthlyEventMoraleChange ?? 0
+    }
+
+    var eventBrandChangeThisMonth: Int {
+        monthlyEventBrandChange ?? 0
+    }
+
+    var hadEventThisMonth: Bool {
+        lastEventTitle != nil
+    }
+
     // MARK: - Expenses
 
     var monthlyExpenses: Double {
@@ -99,7 +144,8 @@ struct Company: Codable {
 
     var cashChangeThisMonth: Double {
         monthlyProfit -
-            totalOneTimeSpendingThisMonth
+            totalOneTimeSpendingThisMonth +
+            eventCashChangeThisMonth
     }
 
     // MARK: - Stage
@@ -137,6 +183,14 @@ struct Company: Codable {
             monthlyProductQualityChange: 0,
             monthlyMoraleChange: 0,
             monthlyBrandAwarenessChange: 0,
+            lastEventTitle: nil,
+            lastEventChoiceTitle: nil,
+            monthlyEventCashChange: nil,
+            monthlyEventRevenueChange: nil,
+            monthlyEventMarketValueChange: nil,
+            monthlyEventProductChange: nil,
+            monthlyEventMoraleChange: nil,
+            monthlyEventBrandChange: nil,
             lastMarketingCampaign: nil,
             lastMarketingGain: 0,
             lastMarketingWasSubscription: false,
@@ -175,6 +229,14 @@ struct Company: Codable {
             monthlyProductQualityChange: 0,
             monthlyMoraleChange: 0,
             monthlyBrandAwarenessChange: 0,
+            lastEventTitle: nil,
+            lastEventChoiceTitle: nil,
+            monthlyEventCashChange: nil,
+            monthlyEventRevenueChange: nil,
+            monthlyEventMarketValueChange: nil,
+            monthlyEventProductChange: nil,
+            monthlyEventMoraleChange: nil,
+            monthlyEventBrandChange: nil,
             lastMarketingCampaign: nil,
             lastMarketingGain: 0,
             lastMarketingWasSubscription: false,

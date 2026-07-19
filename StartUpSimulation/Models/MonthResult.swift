@@ -43,6 +43,19 @@ struct MonthResult {
     let newBrandAwareness: Int
     let totalBrandAwarenessChange: Int
 
+    // MARK: - Event Impact
+
+    let eventTitle: String?
+    let eventChoiceTitle: String?
+
+    let eventCashChange: Double
+    let eventRevenueChange: Double
+    let eventMarketValueChange: Double
+
+    let eventProductChange: Int
+    let eventMoraleChange: Int
+    let eventBrandChange: Int
+
     // MARK: - Marketing Activity
 
     let marketingSpend: Double
@@ -93,6 +106,10 @@ struct MonthResult {
         totalBrandAwarenessChange
     }
 
+    var hadEvent: Bool {
+        eventTitle != nil
+    }
+
     var hadMarketingActivity: Bool {
         marketingSpend > 0
     }
@@ -104,6 +121,7 @@ struct MonthResult {
 
     var netFinancialResult: Double {
         monthlyProfit -
-            totalOneTimeSpending
+            totalOneTimeSpending +
+            eventCashChange
     }
 }

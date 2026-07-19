@@ -498,52 +498,7 @@ struct MainMenuView: View {
     private func formatCurrency(
         _ amount: Double
     ) -> String {
-        let isNegative =
-            amount < 0
-
-        let absoluteAmount =
-            abs(amount)
-
-        let formattedAmount: String
-
-        if absoluteAmount >=
-            1_000_000_000 {
-
-            formattedAmount =
-                String(
-                    format: "$%.1fB",
-                    absoluteAmount /
-                        1_000_000_000
-                )
-
-        } else if absoluteAmount >=
-                    1_000_000 {
-
-            formattedAmount =
-                String(
-                    format: "$%.1fM",
-                    absoluteAmount /
-                        1_000_000
-                )
-
-        } else if absoluteAmount >=
-                    1_000 {
-
-            formattedAmount =
-                String(
-                    format: "$%.0fK",
-                    absoluteAmount /
-                        1_000
-                )
-
-        } else {
-            formattedAmount =
-                "$\(Int(absoluteAmount))"
-        }
-
-        return isNegative
-            ? "-\(formattedAmount)"
-            : formattedAmount
+        CurrencyFormatter.compact(amount)
     }
 }
 
