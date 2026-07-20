@@ -21,18 +21,137 @@ Every decision has consequences. Spend too aggressively and you'll run out of mo
 
 # 📸 Screenshots
 
-| Screen | Preview |
-|---------|---------|
-| Main Menu | *(Image 1)* |
-| Startup Creation | *(Image 2)* |
-| Dashboard | *(Image 3)* |
-| Finance | *(Image 4)* |
-| Product | *(Image 5)* |
-| Marketing | *(Image 6)* |
-| Employees | *(Image 7)* |
-| Random Events | *(Image 8)* |
-| Founder Profile | *(Image 9)* |
-| End Game Screens | *(Image 10)* |
+## 📸 Game Walkthrough
+
+### 1. Main Menu
+> The entry point of the game where players can start a new company, continue a saved startup, learn how to play, or view their founder profile.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/729ace71-ffac-47d2-9bdd-5e24ab074b6b" width="230"/>
+</p>
+
+---
+
+### 2. How to Play
+> Learn the core mechanics of the simulation, understand how each business decision affects your company, and discover what it takes to build a billion-dollar Unicorn startup.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/508f87f9-544e-47a9-96ff-381af1575a9c" width="230"/>
+</p>
+
+---
+
+### 3. Create Your Startup
+> Choose your company name, industry, and decide how much of your personal wealth to invest before launching your business.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/a5c825f5-aa33-45d0-9de1-f65a4ea05043" width="230"/>
+  <img src="https://github.com/user-attachments/assets/941db375-2a45-4889-b791-d0628ed73957" width="230"/>
+</p>
+
+---
+
+### 4. Dashboard
+> The central hub of the simulation showing your startup's financial health, product quality, employee morale, market value, and available management actions.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/23964972-e529-42ef-80e6-a93f158edf4d" width="230"/>
+  <img src="https://github.com/user-attachments/assets/d8d84edd-01f6-42db-9a21-ee64431935ac" width="230"/>
+</p>
+
+---
+
+### 5. Improve Your Product
+> Invest in bug fixes, new features, and major releases to increase product quality and stay competitive.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/ea616f95-312e-44f2-ad08-f7b108328686" width="230"/>
+</p>
+
+---
+
+### 6. Marketing
+> Launch advertising campaigns to increase brand awareness, attract new customers, and generate long-term revenue growth while balancing recurring marketing expenses.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/cbbc700c-eb2d-4fde-af58-ef93248d6dc3" width="230"/>
+  <img src="https://github.com/user-attachments/assets/cc04638d-b9b7-463f-85f6-5c7b603832cb" width="230"/>
+</p>
+
+---
+
+### 7. Financial Management
+> Monitor your company's income, expenses, monthly profit, and cash flow to understand exactly where your money comes from and how it is being spent.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/fbb54036-a23c-4dbb-918a-9d65e31d2fc4" width="230"/>
+</p>
+
+---
+
+### 8. Build Your Team
+> Hire employees with different experience levels and unique traits to strengthen your company while balancing payroll costs.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/02772563-137c-4c33-a6d9-6a5da862c4f8" width="230"/>
+  <img src="https://github.com/user-attachments/assets/b23d52bf-d0e8-4f1d-b6a5-4d38355a7fd7" width="230"/>
+</p>
+
+---
+
+### 9. Random Business Events
+> Every month, unexpected events challenge your decision-making skills. Respond to opportunities and setbacks, each offering multiple choices with different risks and rewards that can significantly impact your startup's future.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/a07edc19-dee4-41c4-b272-02e8c2a44026" width="230"/>
+  <img src="https://github.com/user-attachments/assets/c287a5c4-16cb-4c33-85c2-ad4fb0b9449b" width="230"/>
+</p>
+
+---
+
+### 10. Advance Through the Months
+> Progress one month at a time while reviewing your company's performance, tracking financial changes, and watching your startup evolve based on every decision you've made.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/026b3a3a-0a3f-4136-8d4f-7f759bbb8485" width="230"/>
+</p>
+
+---
+
+### 11. Sell Your Startup
+> Accept acquisition offers and successfully exit your company, converting your startup's success into personal founder wealth that can be reinvested in future ventures.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/85339167-91c6-46e6-9bf9-3a5e871551d1" width="230"/>
+</p>
+
+---
+
+### 12. Founder Profile & Statistics
+> Track your long-term entrepreneurial career across multiple startups, including wealth, investments, successes, failures, and overall statistics.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/0af2e791-7ef4-402f-b147-cfec23e83682" width="230"/>
+  <img src="https://github.com/user-attachments/assets/61182ffb-a762-4f3a-a522-a33fdb200432" width="230"/>
+</p>
+
+---
+
+### 13. Winning the Game
+> Reach a billion-dollar valuation and officially become a Unicorn startup.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/e04b27a2-48fe-4f90-a419-ea0d96c3544c" width="230"/>
+</p>
+
+---
+
+### 14. Bankruptcy
+> If your company runs out of runway and exceeds the debt limit, the startup closes and your journey ends.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/00e6808b-c695-4d99-83a5-36cc8d749bfd" width="230"/>
+</p>
 
 ---
 
