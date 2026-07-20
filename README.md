@@ -10,7 +10,11 @@ Every decision has consequences. Spend too aggressively and you'll run out of mo
 
 # 🎥 Demo
 
-> [**StartUp Simulation Video**]()
+> [**StartUp Simulation Video**](https://drive.google.com/file/d/1L1BraGYcwyTap4CICpafQEgbVKEsYFLS/view?usp=sharing)
+> 
+> [**Benkrupcy Example Video**](https://drive.google.com/file/d/1GinodkSfYOkcIqPbdhxZA2wgH6_AUme6/view?usp=sharing)
+> 
+> [**Unicorn Example Video**](https://drive.google.com/file/d/1p8Lhd43LdOBtaV8hjFooF6CtN1OounQd/view?usp=sharing)
 
 
 ---
