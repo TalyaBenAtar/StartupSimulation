@@ -54,7 +54,8 @@ Every decision has consequences. Spend too aggressively and you'll run out of mo
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/23964972-e529-42ef-80e6-a93f158edf4d" width="230"/>
-  <img src="https://github.com/user-attachments/assets/d8d84edd-01f6-42db-9a21-ee64431935ac" width="230"/>
+  <img src="https://github.com/user-attachments/assets/59fc16cf-e20a-4948-a4b4-0ebfd9cce5d2" width="246"/>
+
 </p>
 
 ---
