@@ -15,6 +15,9 @@ struct StartUpSimulationApp: App {
         WindowGroup {
             MainMenuView()
                 .environmentObject(gameViewModel)
+                .onAppear {
+                    SoundManager.shared.playBackgroundMusic()
+                }
         }
     }
 }

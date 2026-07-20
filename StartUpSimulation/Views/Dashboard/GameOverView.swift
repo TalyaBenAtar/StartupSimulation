@@ -130,6 +130,20 @@ struct GameOverView: View {
         .interactiveDismissDisabled()
         .onAppear {
             animateCelebration = true
+
+            switch gameViewModel.gameOutcome {
+            case .unicorn:
+                SoundManager.shared.playUnicorn()
+
+            case .bankrupt:
+                SoundManager.shared.playBankruptcy()
+
+            case .sold:
+                SoundManager.shared.playSold()
+
+            case .active:
+                break
+            }
         }
     }
 
