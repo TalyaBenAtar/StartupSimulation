@@ -21,8 +21,6 @@ Every decision has consequences. Spend too aggressively and you'll run out of mo
 
 # 📸 Screenshots
 
-## 📸 Game Walkthrough
-
 ### 1. Main Menu
 > The entry point of the game where players can start a new company, continue a saved startup, learn how to play, or view their founder profile.
 
